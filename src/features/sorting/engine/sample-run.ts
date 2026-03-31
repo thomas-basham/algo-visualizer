@@ -4,7 +4,20 @@ function createRandomValue() {
   return Math.floor(Math.random() * 88) + 12;
 }
 
-export function createDataset(size: number) {
+function createSeededValue(seed: number) {
+  let nextSeed = seed;
+
+  return () => {
+    nextSeed = (nextSeed * 1664525 + 1013904223) % 4294967296;
+    return Math.floor((nextSeed / 4294967296) * 88) + 12;
+  };
+}
+
+export function createDataset(size: number, seed?: number) {
+  if (typeof seed === "number") {
+    return Array.from({ length: size }, createSeededValue(seed));
+  }
+
   return Array.from({ length: size }, createRandomValue);
 }
 

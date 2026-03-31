@@ -27,7 +27,8 @@ type SortingTimelines = {
   right: SortingTimeline;
 };
 
-const initialDataset = createDataset(defaultSortingConfig.size);
+const initialDatasetSeed = 17;
+const initialDataset = createDataset(defaultSortingConfig.size, initialDatasetSeed);
 
 function getStepDurationMs(speed: number) {
   return Math.max(6, Math.round(165 - speed * 2.1));
