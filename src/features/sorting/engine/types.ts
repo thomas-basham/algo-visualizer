@@ -6,9 +6,7 @@ export type SortingAlgorithmId =
   | "quick"
   | "native-js";
 
-export type InputDistribution = "random" | "nearly-sorted";
-
-export type PlaybackStatus = "idle" | "ready" | "playing" | "paused";
+export type PlaybackStatus = "ready" | "playing" | "paused" | "completed";
 
 export type BigOSummary = {
   best: string;
@@ -23,31 +21,31 @@ export type SortingAlgorithmMeta = {
   id: SortingAlgorithmId;
   label: string;
   description: string;
-  category: "comparison" | "native";
+  implemented: boolean;
   bigO: BigOSummary;
 };
 
 export type SortingMetrics = {
   comparisons: number;
   swaps: number;
-  writes: number;
-  arrayAccesses: number;
-  playbackMs: number;
+  elapsedMs: number;
 };
 
 export type SortingRunConfig = {
   algorithmId: SortingAlgorithmId;
-  distribution: InputDistribution;
   size: number;
   speed: number;
 };
 
-export type SortingSnapshot = {
+export type SortingFrame = {
   values: number[];
-  activeIndices: number[];
+  comparedIndices: number[];
+  swappedIndices: number[];
   sortedIndices: number[];
-  pivotIndex: number | null;
-  metrics: SortingMetrics;
-  status: PlaybackStatus;
+  metrics: Pick<SortingMetrics, "comparisons" | "swaps">;
+  label: string;
 };
 
+export type SortingRun = {
+  frames: SortingFrame[];
+};

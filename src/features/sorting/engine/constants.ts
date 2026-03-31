@@ -5,7 +5,7 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
     id: "bubble",
     label: "Bubble Sort",
     description: "Simple adjacent swaps. Easy to teach, poor at scale.",
-    category: "comparison",
+    implemented: true,
     bigO: {
       best: "O(n)",
       average: "O(n²)",
@@ -19,7 +19,7 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
     id: "selection",
     label: "Selection Sort",
     description: "Repeatedly selects the minimum from the unsorted region.",
-    category: "comparison",
+    implemented: true,
     bigO: {
       best: "O(n²)",
       average: "O(n²)",
@@ -33,7 +33,7 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
     id: "insertion",
     label: "Insertion Sort",
     description: "Strong for nearly sorted inputs and small arrays.",
-    category: "comparison",
+    implemented: true,
     bigO: {
       best: "O(n)",
       average: "O(n²)",
@@ -46,8 +46,8 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   {
     id: "merge",
     label: "Merge Sort",
-    description: "Divide and conquer with predictable performance.",
-    category: "comparison",
+    description: "Planned next: divide-and-conquer playback with merge writes.",
+    implemented: false,
     bigO: {
       best: "O(n log n)",
       average: "O(n log n)",
@@ -60,8 +60,8 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   {
     id: "quick",
     label: "Quick Sort",
-    description: "Fast in practice with careful pivot strategy.",
-    category: "comparison",
+    description: "Planned next: partition-based playback with pivot states.",
+    implemented: false,
     bigO: {
       best: "O(n log n)",
       average: "O(n log n)",
@@ -74,8 +74,8 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   {
     id: "native-js",
     label: "JavaScript Native Sort",
-    description: "Browser/runtime implementation for benchmark comparison only.",
-    category: "native",
+    description: "Planned later as a benchmark-only comparison mode.",
+    implemented: false,
     bigO: {
       best: "Engine dependent",
       average: "Engine dependent",
@@ -87,10 +87,12 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   },
 ];
 
-export const defaultSortingConfig: SortingRunConfig = {
-  algorithmId: "quick",
-  distribution: "random",
-  size: 32,
-  speed: 60,
-};
+export const availableSortingAlgorithms = sortingAlgorithms.filter(
+  (algorithm) => algorithm.implemented,
+);
 
+export const defaultSortingConfig: SortingRunConfig = {
+  algorithmId: "bubble",
+  size: 24,
+  speed: 72,
+};
