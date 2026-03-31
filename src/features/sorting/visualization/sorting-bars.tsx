@@ -35,6 +35,16 @@ const canvasColors = {
   sorted: "#10b981",
 } as const;
 
+const domGradients = {
+  default: "linear-gradient(180deg, #94a3b8, #475569)",
+  compared: "linear-gradient(180deg, #67e8f9, #0ea5e9)",
+  swapped: "linear-gradient(180deg, #fda4af, #f97316)",
+  overwritten: "linear-gradient(180deg, #f9a8d4, #db2777)",
+  pivot: "linear-gradient(180deg, #fde68a, #f59e0b)",
+  merged: "linear-gradient(180deg, #c4b5fd, #6366f1)",
+  sorted: "linear-gradient(180deg, #34d399, #059669)",
+} as const;
+
 function createHighlightSets({
   comparedIndices,
   swappedIndices,
@@ -119,6 +129,34 @@ function getCanvasBarColor(index: number, highlights: HighlightSets) {
   }
 
   return canvasColors.default;
+}
+
+function getDomBarBackground(index: number, highlights: HighlightSets) {
+  if (highlights.overwritten.has(index)) {
+    return domGradients.overwritten;
+  }
+
+  if (highlights.swapped.has(index)) {
+    return domGradients.swapped;
+  }
+
+  if (highlights.pivot.has(index)) {
+    return domGradients.pivot;
+  }
+
+  if (highlights.merged.has(index)) {
+    return domGradients.merged;
+  }
+
+  if (highlights.compared.has(index)) {
+    return domGradients.compared;
+  }
+
+  if (highlights.sorted.has(index)) {
+    return domGradients.sorted;
+  }
+
+  return domGradients.default;
 }
 
 function SortingBarsCanvas(props: SortingBarsProps) {
@@ -255,46 +293,30 @@ function SortingBarsDom(props: SortingBarsProps) {
     mergedIndices,
     transitionMs,
   } = props;
-  const comparedSet = new Set(comparedIndices);
-  const swappedSet = new Set(swappedIndices);
-  const overwrittenSet = new Set(overwrittenIndices);
-  const sortedSet = new Set(sortedIndices);
-  const pivotSet = new Set(pivotIndices);
-  const mergedSet = new Set(mergedIndices);
+  const highlights = createHighlightSets({
+    values,
+    comparedIndices,
+    swappedIndices,
+    overwrittenIndices,
+    sortedIndices,
+    pivotIndices,
+    mergedIndices,
+    transitionMs,
+    performanceMode: false,
+  });
 
   return (
     <div className="relative rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))] px-4 pb-4 pt-6 sm:px-6 sm:pb-6">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(56,189,248,0.06),transparent_25%),linear-gradient(90deg,rgba(148,163,184,0.07)_1px,transparent_1px),linear-gradient(180deg,rgba(148,163,184,0.06)_1px,transparent_1px)] bg-[size:auto,40px_100%,100%_40px] bg-[position:0_0,0_0,0_100%] opacity-70" />
-      <div className="relative flex h-[320px] items-end gap-1">
+      <div className="relative flex h-[320px] items-stretch gap-1">
         {values.map((value, index) => {
-          const isCompared = comparedSet.has(index);
-          const isSwapped = swappedSet.has(index);
-          const isOverwritten = overwrittenSet.has(index);
-          const isSorted = sortedSet.has(index);
-          const isPivot = pivotSet.has(index);
-          const isMerged = mergedSet.has(index);
-
           return (
-            <div key={index} className="flex min-w-0 flex-1 flex-col justify-end">
+            <div key={index} className="flex h-full min-w-0 flex-1 flex-col justify-end">
               <div
-                className={cn(
-                  "rounded-t-[14px] transition-[height,background-color,opacity] ease-out",
-                  isOverwritten
-                    ? "bg-[linear-gradient(180deg,#f9a8d4,#db2777)]"
-                    : isSwapped
-                      ? "bg-[linear-gradient(180deg,#fda4af,#f97316)]"
-                      : isPivot
-                        ? "bg-[linear-gradient(180deg,#fde68a,#f59e0b)]"
-                        : isMerged
-                          ? "bg-[linear-gradient(180deg,#c4b5fd,#6366f1)]"
-                          : isCompared
-                            ? "bg-[linear-gradient(180deg,#67e8f9,#0ea5e9)]"
-                            : isSorted
-                              ? "bg-[linear-gradient(180deg,#34d399,#059669)]"
-                              : "bg-[linear-gradient(180deg,#94a3b8,#475569)]",
-                )}
+                className={cn("w-full rounded-t-[14px] transition-[height,opacity] ease-out")}
                 style={{
                   height: `${Math.max(10, value)}%`,
+                  background: getDomBarBackground(index, highlights),
                   transitionDuration: `${transitionMs}ms`,
                 }}
                 aria-hidden="true"
