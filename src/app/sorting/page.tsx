@@ -15,7 +15,7 @@ export default function SortingPage() {
         eyebrow="Sorting Lab"
         badge="Working Version"
         title="A live sorting visualizer with real-time frame playback and clear engine boundaries."
-        description="Bubble Sort, Selection Sort, and Insertion Sort are wired into a frame-based animation engine. Controls, renderer, and algorithm logic stay separate so Merge Sort, Quick Sort, and benchmark modes can be added without rewriting the page."
+        description="Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, Quick Sort, and a native Array.sort approximation now run through the same event-driven playback model. Controls, renderer, and algorithm logic stay separate so future visualizers can reuse the same animation architecture."
       />
       <SortingVisualizer />
     </div>

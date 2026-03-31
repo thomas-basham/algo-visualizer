@@ -7,16 +7,21 @@ import type { SortingAlgorithmId, SortingTimeline } from "@/features/sorting/eng
 
 type SortingImplementation = (values: number[]) => VisualizationEvent[];
 
+type CompareOptions = {
+  label?: string;
+  leftValue?: number;
+  rightValue?: number;
+};
+
 type EventRecorder = {
   values: number[];
-  events: VisualizationEvent[];
-  compare: (leftIndex: number, rightIndex: number) => number;
+  compare: (leftIndex: number, rightIndex: number, options?: CompareOptions) => number;
   swap: (leftIndex: number, rightIndex: number) => void;
   overwrite: (targetIndex: number, value: number, label: string) => void;
   markSorted: (indices: number[], label: string) => void;
   pivot: (indices: number[], label: string) => void;
   merge: (indices: number[], label: string) => void;
-  finish: () => VisualizationEvent[];
+  finish: (finalLabel?: string) => VisualizationEvent[];
 };
 
 function createIndexRange(start: number, end: number) {
@@ -37,13 +42,19 @@ function createRecorder(initialValues: number[]): EventRecorder {
 
   return {
     values,
-    events,
-    compare(leftIndex, rightIndex) {
+    compare(leftIndex, rightIndex, options = {}) {
+      const leftValue = options.leftValue ?? values[leftIndex];
+      const rightValue = options.rightValue ?? values[rightIndex];
+
       pushEvent(
-        createSortingEvent("compare", [leftIndex, rightIndex], `Comparing ${leftIndex + 1} and ${rightIndex + 1}`),
+        createSortingEvent(
+          "compare",
+          [leftIndex, rightIndex],
+          options.label ?? `Comparing ${leftIndex + 1} and ${rightIndex + 1}`,
+        ),
       );
 
-      return values[leftIndex] - values[rightIndex];
+      return leftValue - rightValue;
     },
     swap(leftIndex, rightIndex) {
       if (leftIndex === rightIndex) {
@@ -52,7 +63,11 @@ function createRecorder(initialValues: number[]): EventRecorder {
 
       [values[leftIndex], values[rightIndex]] = [values[rightIndex], values[leftIndex]];
       pushEvent(
-        createSortingEvent("swap", [leftIndex, rightIndex], `Swapping ${leftIndex + 1} and ${rightIndex + 1}`),
+        createSortingEvent(
+          "swap",
+          [leftIndex, rightIndex],
+          `Swapping ${leftIndex + 1} and ${rightIndex + 1}`,
+        ),
       );
     },
     overwrite(targetIndex, value, label) {
@@ -68,11 +83,8 @@ function createRecorder(initialValues: number[]): EventRecorder {
     merge(indices, label) {
       pushEvent(createSortingEvent("merge", indices, label));
     },
-    finish() {
-      pushEvent(
-        createSortingEvent("markSorted", createIndexRange(0, values.length - 1), "Sorting complete"),
-      );
-
+    finish(finalLabel = "Sorting complete") {
+      pushEvent(createSortingEvent("markSorted", createIndexRange(0, values.length - 1), finalLabel));
       return events;
     },
   };
@@ -153,23 +165,161 @@ function emitInsertionSortEvents(initialValues: number[]) {
   return recorder.finish();
 }
 
-const implementations: Record<Extract<SortingAlgorithmId, "bubble" | "selection" | "insertion">, SortingImplementation> =
-  {
-    bubble: emitBubbleSortEvents,
-    selection: emitSelectionSortEvents,
-    insertion: emitInsertionSortEvents,
-  };
+function emitMergeSortEvents(initialValues: number[]) {
+  const recorder = createRecorder(initialValues);
+  const { values } = recorder;
+
+  function mergeSort(start: number, end: number) {
+    if (start >= end) {
+      return;
+    }
+
+    const midpoint = Math.floor((start + end) / 2);
+    mergeSort(start, midpoint);
+    mergeSort(midpoint + 1, end);
+
+    const mergeRange = createIndexRange(start, end);
+    recorder.merge(mergeRange, `Merging range ${start + 1}-${end + 1}`);
+
+    const mergedValues: number[] = [];
+    let left = start;
+    let right = midpoint + 1;
+
+    while (left <= midpoint && right <= end) {
+      if (
+        recorder.compare(left, right, {
+          label: `Merge compare ${left + 1} and ${right + 1}`,
+        }) <= 0
+      ) {
+        mergedValues.push(values[left]);
+        left += 1;
+      } else {
+        mergedValues.push(values[right]);
+        right += 1;
+      }
+    }
+
+    while (left <= midpoint) {
+      mergedValues.push(values[left]);
+      left += 1;
+    }
+
+    while (right <= end) {
+      mergedValues.push(values[right]);
+      right += 1;
+    }
+
+    mergedValues.forEach((value, offset) => {
+      const targetIndex = start + offset;
+      recorder.overwrite(targetIndex, value, `Writing ${value} into position ${targetIndex + 1}`);
+    });
+
+    recorder.merge([], `Finished merge ${start + 1}-${end + 1}`);
+  }
+
+  mergeSort(0, values.length - 1);
+
+  return recorder.finish();
+}
+
+function emitQuickSortEvents(initialValues: number[]) {
+  const recorder = createRecorder(initialValues);
+  const { values } = recorder;
+
+  function partition(start: number, end: number) {
+    const pivotValue = values[end];
+
+    recorder.pivot([end], `Pivot chosen at index ${end + 1}`);
+
+    let partitionIndex = start;
+
+    for (let current = start; current < end; current += 1) {
+      if (
+        recorder.compare(current, end, {
+          label: `Compare ${current + 1} against pivot ${end + 1}`,
+          rightValue: pivotValue,
+        }) < 0
+      ) {
+        recorder.swap(partitionIndex, current);
+        partitionIndex += 1;
+      }
+    }
+
+    recorder.swap(partitionIndex, end);
+    recorder.pivot([partitionIndex], `Pivot moved to index ${partitionIndex + 1}`);
+
+    return partitionIndex;
+  }
+
+  function quickSort(start: number, end: number) {
+    if (start > end) {
+      return;
+    }
+
+    if (start === end) {
+      recorder.markSorted([start], `Single value at index ${start + 1} is sorted`);
+      return;
+    }
+
+    const pivotIndex = partition(start, end);
+    recorder.markSorted([pivotIndex], `Pivot locked at index ${pivotIndex + 1}`);
+    recorder.pivot([], `Partition complete around index ${pivotIndex + 1}`);
+    quickSort(start, pivotIndex - 1);
+    quickSort(pivotIndex + 1, end);
+  }
+
+  quickSort(0, values.length - 1);
+
+  return recorder.finish();
+}
+
+function emitNativeSortEvents(initialValues: number[]) {
+  const recorder = createRecorder(initialValues);
+  const items = initialValues.map((value, index) => ({ value, token: `${index}-${value}` }));
+
+  items.sort((leftItem, rightItem) => {
+    const leftIndex = items.findIndex((item) => item.token === leftItem.token);
+    const rightIndex = items.findIndex((item) => item.token === rightItem.token);
+
+    recorder.compare(leftIndex, rightIndex, {
+      label: `Native comparator observed ${leftIndex + 1} and ${rightIndex + 1}`,
+      leftValue: leftItem.value,
+      rightValue: rightItem.value,
+    });
+
+    return leftItem.value - rightItem.value;
+  });
+
+  const finalValues = items.map((item) => item.value);
+  const fullRange = createIndexRange(0, finalValues.length - 1);
+
+  recorder.merge(fullRange, "Approximating native engine write-back");
+
+  finalValues.forEach((value, index) => {
+    if (recorder.values[index] !== value) {
+      recorder.overwrite(index, value, `Approximate native overwrite at position ${index + 1}`);
+    }
+  });
+
+  recorder.merge([], "Finished native write-back approximation");
+
+  return recorder.finish("Approximate native sort complete");
+}
+
+const implementations: Record<SortingAlgorithmId, SortingImplementation> = {
+  bubble: emitBubbleSortEvents,
+  selection: emitSelectionSortEvents,
+  insertion: emitInsertionSortEvents,
+  merge: emitMergeSortEvents,
+  quick: emitQuickSortEvents,
+  "native-js": emitNativeSortEvents,
+};
 
 export function buildSortingTimeline(
   algorithmId: SortingAlgorithmId,
   values: number[],
 ): SortingTimeline {
-  const implementation = implementations[algorithmId as keyof typeof implementations];
-
-  if (!implementation) {
-    throw new Error(`Algorithm "${algorithmId}" is not implemented yet.`);
-  }
-
+  const implementation = implementations[algorithmId];
   const events = implementation(values);
 
   return buildTimeline({

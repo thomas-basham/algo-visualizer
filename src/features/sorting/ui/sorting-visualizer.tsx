@@ -154,21 +154,25 @@ export function SortingVisualizer() {
             <StatusPill label={`${config.size} Bars`} tone="neutral" />
           </div>
           <div className="mt-6 text-sm leading-7 text-slate-300">
-            {frameMessage}. The timeline is driven by semantic events, so this same playback system
-            can be reused for searching, trees, and graph traversals later.
+            {frameMessage}. Bubble, Selection, Insertion, Merge, Quick, and the native sort
+            approximation all run through the same event pipeline, so the playback model stays
+            consistent even when the visualization semantics change.
           </div>
         </SurfaceCard>
       </div>
 
       <SurfaceCard
         title="Visualization Layer"
-        description="The bar view consumes reducer-built frames instead of direct algorithm mutations."
+        description="The bar view consumes reducer-built frames instead of direct algorithm mutations, including overwrite, pivot, and merge states."
       >
         <SortingBars
           values={currentFrame.state.values}
           comparedIndices={currentFrame.state.comparedIndices}
           swappedIndices={currentFrame.state.swappedIndices}
+          overwrittenIndices={currentFrame.state.overwrittenIndices}
           sortedIndices={currentFrame.state.sortedIndices}
+          pivotIndices={currentFrame.state.pivotIndices}
+          mergedIndices={currentFrame.state.mergedIndices}
           transitionMs={Math.max(12, Math.round(stepDuration * 0.9))}
         />
       </SurfaceCard>

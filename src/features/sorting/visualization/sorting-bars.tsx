@@ -4,7 +4,10 @@ type SortingBarsProps = {
   values: number[];
   comparedIndices: number[];
   swappedIndices: number[];
+  overwrittenIndices: number[];
   sortedIndices: number[];
+  pivotIndices: number[];
+  mergedIndices: number[];
   transitionMs: number;
 };
 
@@ -12,12 +15,18 @@ export function SortingBars({
   values,
   comparedIndices,
   swappedIndices,
+  overwrittenIndices,
   sortedIndices,
+  pivotIndices,
+  mergedIndices,
   transitionMs,
 }: SortingBarsProps) {
   const comparedSet = new Set(comparedIndices);
   const swappedSet = new Set(swappedIndices);
+  const overwrittenSet = new Set(overwrittenIndices);
   const sortedSet = new Set(sortedIndices);
+  const pivotSet = new Set(pivotIndices);
+  const mergedSet = new Set(mergedIndices);
 
   return (
     <div className="relative rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))] px-4 pb-4 pt-6 sm:px-6 sm:pb-6">
@@ -26,20 +35,29 @@ export function SortingBars({
         {values.map((value, index) => {
           const isCompared = comparedSet.has(index);
           const isSwapped = swappedSet.has(index);
+          const isOverwritten = overwrittenSet.has(index);
           const isSorted = sortedSet.has(index);
+          const isPivot = pivotSet.has(index);
+          const isMerged = mergedSet.has(index);
 
           return (
             <div key={index} className="flex min-w-0 flex-1 flex-col justify-end">
               <div
                 className={cn(
                   "rounded-t-[14px] transition-[height,background-color,opacity] ease-out",
-                  isSwapped
+                  isOverwritten
+                    ? "bg-[linear-gradient(180deg,#f9a8d4,#db2777)]"
+                    : isSwapped
                     ? "bg-[linear-gradient(180deg,#fda4af,#f97316)]"
+                    : isPivot
+                      ? "bg-[linear-gradient(180deg,#fde68a,#f59e0b)]"
+                      : isMerged
+                        ? "bg-[linear-gradient(180deg,#c4b5fd,#6366f1)]"
                     : isCompared
                       ? "bg-[linear-gradient(180deg,#67e8f9,#0ea5e9)]"
                       : isSorted
-                    ? "bg-[linear-gradient(180deg,#34d399,#059669)]"
-                    : "bg-[linear-gradient(180deg,#94a3b8,#475569)]",
+                        ? "bg-[linear-gradient(180deg,#34d399,#059669)]"
+                        : "bg-[linear-gradient(180deg,#94a3b8,#475569)]",
                 )}
                 style={{
                   height: `${Math.max(10, value)}%`,
@@ -68,6 +86,18 @@ export function SortingBars({
         <span className="inline-flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-orange-400" />
           Swapping
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-pink-400" />
+          Overwrite
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
+          Pivot
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-violet-300" />
+          Merge
         </span>
         <span className="inline-flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />

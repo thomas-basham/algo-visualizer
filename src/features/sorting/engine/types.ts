@@ -21,6 +21,7 @@ export type SortingAlgorithmMeta = {
   id: SortingAlgorithmId;
   label: string;
   description: string;
+  note?: string;
   implemented: boolean;
   bigO: BigOSummary;
 };

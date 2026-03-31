@@ -38,9 +38,17 @@ export function SortingMetricsPanel({
       </SurfaceCard>
 
       <SurfaceCard
-        title="Complexity Summary"
-        description="Algorithm metadata stays separate from the renderer so future sorts plug into the same UI."
+        title="Algorithm Info"
+        description="Metadata stays separate from the renderer so new algorithms plug into the same event contract."
       >
+        <div className="mb-4 rounded-2xl border border-white/8 bg-white/[0.03] p-4 text-sm leading-6 text-slate-300">
+          {algorithm.description}
+        </div>
+        {algorithm.note ? (
+          <div className="mb-4 rounded-2xl border border-amber-300/15 bg-amber-300/8 p-4 text-sm leading-6 text-amber-100">
+            {algorithm.note}
+          </div>
+        ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
           <MetricTile label="Best" value={algorithm.bigO.best} />
           <MetricTile label="Average" value={algorithm.bigO.average} />

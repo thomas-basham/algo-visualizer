@@ -16,8 +16,8 @@ function createNextState(
     comparedIndices: [],
     swappedIndices: [],
     overwrittenIndices: [],
-    pivotIndices: [],
-    mergedIndices: [],
+    pivotIndices: [...state.pivotIndices],
+    mergedIndices: [...state.mergedIndices],
     metrics: { ...state.metrics },
     summary: event.label,
   };
@@ -90,4 +90,3 @@ export function reduceSortingEvent(
     }
   }
 }
-

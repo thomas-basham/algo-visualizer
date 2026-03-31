@@ -46,8 +46,8 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   {
     id: "merge",
     label: "Merge Sort",
-    description: "Planned next: divide-and-conquer playback with merge writes.",
-    implemented: false,
+    description: "Divide-and-conquer sorting with explicit merge ranges and overwrite animation.",
+    implemented: true,
     bigO: {
       best: "O(n log n)",
       average: "O(n log n)",
@@ -60,8 +60,8 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   {
     id: "quick",
     label: "Quick Sort",
-    description: "Planned next: partition-based playback with pivot states.",
-    implemented: false,
+    description: "Partition-driven sorting that keeps pivot behavior visible throughout the run.",
+    implemented: true,
     bigO: {
       best: "O(n log n)",
       average: "O(n log n)",
@@ -74,8 +74,9 @@ export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   {
     id: "native-js",
     label: "JavaScript Native Sort",
-    description: "Planned later as a benchmark-only comparison mode.",
-    implemented: false,
+    description: "Educational approximation of native engine behavior using comparator callbacks and a write-back phase.",
+    note: "JavaScript engines do not expose their true internal move/swap timeline. This mode visualizes observable comparator callbacks and an approximate overwrite phase so users can still compare behavior.",
+    implemented: true,
     bigO: {
       best: "Engine dependent",
       average: "Engine dependent",
