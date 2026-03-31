@@ -13,12 +13,11 @@ export default function SortingPage() {
     <div className="space-y-6">
       <PageHero
         eyebrow="Sorting Lab"
-        badge="MVP Scaffold"
-        title="A sorting route with clear seams between the engine, controls, and renderer."
-        description="The current page is intentionally scaffolded rather than overbuilt. The next implementation step is replacing the preview snapshot generator with real instrumented traces for Bubble, Selection, Insertion, Merge, Quick, and native JavaScript sort."
+        badge="Working Version"
+        title="A live sorting visualizer with real-time frame playback and clear engine boundaries."
+        description="Bubble Sort, Selection Sort, and Insertion Sort are wired into a frame-based animation engine. Controls, renderer, and algorithm logic stay separate so Merge Sort, Quick Sort, and benchmark modes can be added without rewriting the page."
       />
       <SortingVisualizer />
     </div>
   );
 }
-
