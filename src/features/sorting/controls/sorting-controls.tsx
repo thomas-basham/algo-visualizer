@@ -2,6 +2,11 @@
 
 import { cn } from "@/lib/utils";
 import type { PlaybackStatus } from "@/lib/animation/types";
+import {
+  performanceModeThreshold,
+  performanceSortingSizeMax,
+  standardSortingSizeMax,
+} from "@/features/sorting/engine/constants";
 import type {
   SortingAlgorithmId,
   SortingAlgorithmMeta,
@@ -16,6 +21,7 @@ type SortingControlsProps = {
   onAlgorithmChange: (side: "left" | "right", algorithmId: SortingAlgorithmId) => void;
   onSizeChange: (size: number) => void;
   onSpeedChange: (speed: number) => void;
+  onPerformanceModeChange: (enabled: boolean) => void;
   onPlay: () => void;
   onPauseResume: () => void;
   onStepForward: () => void;
@@ -40,6 +46,7 @@ export function SortingControls({
   onAlgorithmChange,
   onSizeChange,
   onSpeedChange,
+  onPerformanceModeChange,
   onPlay,
   onPauseResume,
   onStepForward,
@@ -48,6 +55,10 @@ export function SortingControls({
   pauseResumeLabel,
   canStepForward,
 }: SortingControlsProps) {
+  const sizeMax = config.performanceMode
+    ? performanceSortingSizeMax
+    : standardSortingSizeMax;
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
@@ -125,17 +136,24 @@ export function SortingControls({
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
               Array Size
             </span>
-            <span className="text-sm font-medium text-slate-200">{config.size}</span>
+            <span className="text-sm font-medium text-slate-200">
+              {config.size} / {sizeMax}
+            </span>
           </div>
           <input
             type="range"
             min={8}
-            max={40}
+            max={sizeMax}
             step={1}
             value={config.size}
             onChange={(event) => onSizeChange(Number(event.target.value))}
             className="w-full accent-cyan-300"
           />
+          <div className="text-xs leading-6 text-slate-400">
+            {config.performanceMode
+              ? "Performance mode raises the size ceiling and uses a lighter renderer for large runs."
+              : `Standard mode keeps the DOM renderer. Turn on performance mode around ${performanceModeThreshold}+ bars.`}
+          </div>
         </label>
 
         <label className="space-y-3">
@@ -156,6 +174,39 @@ export function SortingControls({
           />
         </label>
       </div>
+
+      <label className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Performance Mode
+          </div>
+          <div className="mt-2 text-sm leading-6 text-slate-300">
+            Uses Canvas rendering, larger dataset sizes, and stripped-down animation styling to
+            keep frame updates smooth.
+          </div>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={config.performanceMode}
+          onClick={() => onPerformanceModeChange(!config.performanceMode)}
+          className={cn(
+            "relative inline-flex h-7 w-14 shrink-0 rounded-full border transition",
+            config.performanceMode
+              ? "border-cyan-300/30 bg-cyan-300/20"
+              : "border-white/10 bg-white/[0.05]",
+          )}
+        >
+          <span
+            className={cn(
+              "absolute top-1 h-5 w-5 rounded-full transition",
+              config.performanceMode
+                ? "left-8 bg-cyan-100"
+                : "left-1 bg-slate-200",
+            )}
+          />
+        </button>
+      </label>
 
       <div className="flex flex-wrap gap-3">
         <button
@@ -197,7 +248,11 @@ export function SortingControls({
           Randomize
         </button>
         <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-slate-300">
-          {isPending ? "Rebuilding timelines..." : "Synchronized event playback"}
+          {isPending
+            ? "Rebuilding timelines..."
+            : config.performanceMode
+              ? "Synchronized canvas playback"
+              : "Synchronized event playback"}
         </span>
       </div>
     </div>

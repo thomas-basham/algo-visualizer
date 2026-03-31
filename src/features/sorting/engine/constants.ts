@@ -95,9 +95,14 @@ export const availableSortingAlgorithms = sortingAlgorithms.filter(
   (algorithm) => algorithm.implemented,
 );
 
+export const standardSortingSizeMax = 48;
+export const performanceSortingSizeMax = 128;
+export const performanceModeThreshold = 72;
+
 export const defaultSortingConfig: SortingComparisonConfig = {
   leftAlgorithmId: "bubble",
   rightAlgorithmId: "quick",
   size: 24,
   speed: 72,
+  performanceMode: false,
 };

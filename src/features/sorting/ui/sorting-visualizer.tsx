@@ -9,6 +9,7 @@ import { buildSortingTimeline } from "@/features/sorting/engine/algorithms";
 import {
   availableSortingAlgorithms,
   defaultSortingConfig,
+  standardSortingSizeMax,
   sortingAlgorithms,
 } from "@/features/sorting/engine/constants";
 import { createBaseMetrics, createDataset } from "@/features/sorting/engine/sample-run";
@@ -124,6 +125,25 @@ export function SortingVisualizer() {
     setConfig((current) => ({ ...current, speed }));
   }
 
+  function handlePerformanceModeChange(enabled: boolean) {
+    if (!enabled && config.size > standardSortingSizeMax) {
+      const nextSize = standardSortingSizeMax;
+      const nextDataset = dataset.slice(0, nextSize);
+
+      replaceTimelines(
+        {
+          ...config,
+          size: nextSize,
+          performanceMode: false,
+        },
+        nextDataset,
+      );
+      return;
+    }
+
+    setConfig((current) => ({ ...current, performanceMode: enabled }));
+  }
+
   function handlePauseResume() {
     if (playback.status === "playing") {
       playback.pause();
@@ -154,6 +174,7 @@ export function SortingVisualizer() {
           onAlgorithmChange={handleAlgorithmChange}
           onSizeChange={handleSizeChange}
           onSpeedChange={handleSpeedChange}
+          onPerformanceModeChange={handlePerformanceModeChange}
           onPlay={playback.play}
           onPauseResume={handlePauseResume}
           onStepForward={playback.stepForward}
@@ -185,6 +206,11 @@ export function SortingVisualizer() {
             </div>
             <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
               Shared operations elapsed: {playback.frameIndex} / {playback.maxFrameIndex}
+              <div className="mt-2 text-slate-400">
+                {config.performanceMode
+                  ? "Canvas mode is active for smoother large-array rendering."
+                  : "Decorated DOM bars are active for higher visual clarity."}
+              </div>
             </div>
           </div>
         </SurfaceCard>
@@ -199,7 +225,10 @@ export function SortingVisualizer() {
           frameMessage={leftRun.currentFrame.event?.label ?? leftRun.currentFrame.state.summary}
           metrics={leftMetrics}
           state={leftRun.currentFrame.state}
-          transitionMs={Math.max(12, Math.round(stepDuration * 0.9))}
+          transitionMs={
+            config.performanceMode ? 0 : Math.max(12, Math.round(stepDuration * 0.9))
+          }
+          performanceMode={config.performanceMode}
         />
         <SortingComparisonPanel
           panelLabel="Right Panel"
@@ -209,7 +238,10 @@ export function SortingVisualizer() {
           frameMessage={rightRun.currentFrame.event?.label ?? rightRun.currentFrame.state.summary}
           metrics={rightMetrics}
           state={rightRun.currentFrame.state}
-          transitionMs={Math.max(12, Math.round(stepDuration * 0.9))}
+          transitionMs={
+            config.performanceMode ? 0 : Math.max(12, Math.round(stepDuration * 0.9))
+          }
+          performanceMode={config.performanceMode}
         />
       </div>
     </div>

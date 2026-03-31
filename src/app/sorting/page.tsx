@@ -14,8 +14,8 @@ export default function SortingPage() {
       <PageHero
         eyebrow="Sorting Lab"
         badge="Comparison Mode"
-        title="A side-by-side sorting visualizer with synchronized playback and reusable event-driven architecture."
-        description="Choose two algorithms, run them on the same starting array, and compare their emitted operations in real time. The controls, playback engine, renderer, and sorting logic stay separate so new algorithms can plug into the same model without UI rewrites."
+        title="A side-by-side sorting visualizer with synchronized playback, reusable event-driven architecture, and a performance path for larger arrays."
+        description="Choose two algorithms, run them on the same starting array, and compare their emitted operations in real time. Standard mode keeps the decorated DOM bars, while performance mode switches to a lighter Canvas renderer so larger datasets stay smooth without changing the sorting engine."
       />
       <SortingVisualizer />
     </div>

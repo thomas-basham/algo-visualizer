@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import type { PlaybackStatus } from "@/lib/animation/types";
 import { SurfaceCard } from "@/components/ui/surface-card";
 import { StatusPill } from "@/components/ui/status-pill";
@@ -18,6 +20,7 @@ type SortingComparisonPanelProps = {
   metrics: SortingMetrics;
   state: SortingAnimationState;
   transitionMs: number;
+  performanceMode: boolean;
 };
 
 function getStatusTone(status: PlaybackStatus) {
@@ -52,7 +55,7 @@ function getStatusLabel(status: PlaybackStatus) {
   return "Ready";
 }
 
-export function SortingComparisonPanel({
+function SortingComparisonPanelComponent({
   panelLabel,
   algorithm,
   status,
@@ -61,6 +64,7 @@ export function SortingComparisonPanel({
   metrics,
   state,
   transitionMs,
+  performanceMode,
 }: SortingComparisonPanelProps) {
   return (
     <SurfaceCard
@@ -85,6 +89,7 @@ export function SortingComparisonPanel({
           pivotIndices={state.pivotIndices}
           mergedIndices={state.mergedIndices}
           transitionMs={transitionMs}
+          performanceMode={performanceMode}
         />
       </div>
 
@@ -94,3 +99,21 @@ export function SortingComparisonPanel({
     </SurfaceCard>
   );
 }
+
+export const SortingComparisonPanel = memo(
+  SortingComparisonPanelComponent,
+  (previousProps, nextProps) =>
+    previousProps.panelLabel === nextProps.panelLabel &&
+    previousProps.algorithm.id === nextProps.algorithm.id &&
+    previousProps.status === nextProps.status &&
+    previousProps.size === nextProps.size &&
+    previousProps.frameMessage === nextProps.frameMessage &&
+    previousProps.transitionMs === nextProps.transitionMs &&
+    previousProps.performanceMode === nextProps.performanceMode &&
+    previousProps.state === nextProps.state &&
+    previousProps.metrics.comparisons === nextProps.metrics.comparisons &&
+    previousProps.metrics.swaps === nextProps.metrics.swaps &&
+    previousProps.metrics.overwrites === nextProps.metrics.overwrites &&
+    previousProps.metrics.operations === nextProps.metrics.operations &&
+    previousProps.metrics.elapsedMs === nextProps.metrics.elapsedMs,
+);

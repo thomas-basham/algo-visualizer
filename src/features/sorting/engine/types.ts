@@ -39,6 +39,7 @@ export type SortingComparisonConfig = {
   rightAlgorithmId: SortingAlgorithmId;
   size: number;
   speed: number;
+  performanceMode: boolean;
 };
 
 export type SortingAnimationState = {
