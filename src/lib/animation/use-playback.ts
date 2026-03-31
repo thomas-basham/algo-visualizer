@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { PlaybackStatus, VisualizationFrame, VisualizationTimeline } from "@/lib/animation/types";
 
@@ -54,89 +54,132 @@ function usePlaybackClock(
   const [frameIndex, setFrameIndex] = useState(0);
   const [status, setStatus] = useState<PlaybackStatus>("ready");
   const [elapsedMs, setElapsedMs] = useState(0);
+  const frameIndexRef = useRef(0);
+  const statusRef = useRef<PlaybackStatus>("ready");
   const elapsedRef = useRef(0);
   const elapsedHistoryRef = useRef([0]);
 
-  function reset() {
-    elapsedRef.current = 0;
+  const commitState = useCallback((
+    nextFrameIndex: number,
+    nextElapsedMs: number,
+    nextStatus: PlaybackStatus,
+  ) => {
+    frameIndexRef.current = nextFrameIndex;
+    statusRef.current = nextStatus;
+    elapsedRef.current = nextElapsedMs;
+    setFrameIndex(nextFrameIndex);
+    setElapsedMs(nextElapsedMs);
+    setStatus(nextStatus);
+  }, []);
+
+  const reset = useCallback(() => {
     elapsedHistoryRef.current = [0];
-    setFrameIndex(0);
-    setElapsedMs(0);
-    setStatus("ready");
-  }
+    commitState(0, 0, "ready");
+  }, [commitState]);
 
   function getElapsedAtFrame(targetFrameIndex: number) {
     return elapsedHistoryRef.current[targetFrameIndex] ?? elapsedRef.current;
   }
 
-  function play() {
-    if (maxFrameIndex <= 0) {
-      setStatus("completed");
+  const advanceFrames = useCallback((stepCount: number, nextRunningStatus: PlaybackStatus) => {
+    const remainingFrames = maxFrameIndex - frameIndexRef.current;
+
+    if (remainingFrames <= 0) {
+      if (statusRef.current !== "completed") {
+        commitState(frameIndexRef.current, elapsedRef.current, "completed");
+      }
+
       return;
     }
 
-    if (status === "completed") {
-      elapsedRef.current = 0;
-      elapsedHistoryRef.current = [0];
-      setElapsedMs(0);
-      setFrameIndex(0);
+    const appliedSteps = Math.min(stepCount, remainingFrames);
+    const nextFrameIndex = frameIndexRef.current + appliedSteps;
+    let nextElapsedMs = elapsedRef.current;
+
+    for (let step = 1; step <= appliedSteps; step += 1) {
+      nextElapsedMs += stepDurationMs;
+      elapsedHistoryRef.current[frameIndexRef.current + step] = nextElapsedMs;
     }
 
+    commitState(
+      nextFrameIndex,
+      nextElapsedMs,
+      nextFrameIndex >= maxFrameIndex ? "completed" : nextRunningStatus,
+    );
+  }, [commitState, maxFrameIndex, stepDurationMs]);
+
+  function play() {
+    if (maxFrameIndex <= 0) {
+      commitState(frameIndexRef.current, elapsedRef.current, "completed");
+      return;
+    }
+
+    if (statusRef.current === "completed") {
+      elapsedHistoryRef.current = [0];
+      commitState(0, 0, "ready");
+    }
+
+    statusRef.current = "playing";
     setStatus("playing");
   }
 
   function pause() {
-    if (status === "playing") {
+    if (statusRef.current === "playing") {
+      statusRef.current = "paused";
       setStatus("paused");
     }
   }
 
   function stepForward() {
-    if (frameIndex >= maxFrameIndex) {
-      setStatus("completed");
-      return;
-    }
-
-    const nextFrameIndex = frameIndex + 1;
-    const nextElapsedMs = elapsedRef.current + stepDurationMs;
-
-    elapsedRef.current = nextElapsedMs;
-    elapsedHistoryRef.current[nextFrameIndex] = nextElapsedMs;
-    setElapsedMs(nextElapsedMs);
-    setFrameIndex(nextFrameIndex);
-    setStatus(nextFrameIndex >= maxFrameIndex ? "completed" : "paused");
+    advanceFrames(1, "paused");
   }
 
   useEffect(() => {
     reset();
-  }, [resetSignal]);
+  }, [reset, resetSignal]);
 
   useEffect(() => {
     if (status !== "playing") {
       return;
     }
 
-    if (frameIndex >= maxFrameIndex) {
-      setStatus("completed");
+    if (frameIndexRef.current >= maxFrameIndex) {
+      commitState(frameIndexRef.current, elapsedRef.current, "completed");
       return;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      const nextFrameIndex = frameIndex + 1;
-      const nextElapsedMs = elapsedRef.current + stepDurationMs;
+    let animationFrameId = 0;
+    let previousTimestamp = 0;
+    let bufferedMs = 0;
 
-      elapsedRef.current = nextElapsedMs;
-      elapsedHistoryRef.current[nextFrameIndex] = nextElapsedMs;
-      setElapsedMs(nextElapsedMs);
-      setFrameIndex(nextFrameIndex);
-
-      if (nextFrameIndex >= maxFrameIndex) {
-        setStatus("completed");
+    const tick = (timestamp: number) => {
+      if (statusRef.current !== "playing") {
+        return;
       }
-    }, stepDurationMs);
 
-    return () => window.clearTimeout(timeoutId);
-  }, [frameIndex, maxFrameIndex, status, stepDurationMs]);
+      if (previousTimestamp === 0) {
+        previousTimestamp = timestamp;
+      }
+
+      bufferedMs += timestamp - previousTimestamp;
+      previousTimestamp = timestamp;
+
+      if (bufferedMs >= stepDurationMs) {
+        const stepsToAdvance = Math.floor(bufferedMs / stepDurationMs);
+
+        bufferedMs -= stepsToAdvance * stepDurationMs;
+        advanceFrames(stepsToAdvance, "playing");
+      }
+
+      if (statusRef.current === "playing") {
+        animationFrameId = window.requestAnimationFrame(tick);
+      }
+    };
+
+    animationFrameId = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [advanceFrames, commitState, maxFrameIndex, status, stepDurationMs]);
 
   return {
     frameIndex,

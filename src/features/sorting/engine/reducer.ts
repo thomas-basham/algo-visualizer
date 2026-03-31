@@ -12,12 +12,13 @@ function createNextState(
 ): SortingAnimationState {
   return {
     ...state,
-    values: [...state.values],
+    values: state.values,
     comparedIndices: [],
     swappedIndices: [],
     overwrittenIndices: [],
-    pivotIndices: [...state.pivotIndices],
-    mergedIndices: [...state.mergedIndices],
+    sortedIndices: state.sortedIndices,
+    pivotIndices: state.pivotIndices,
+    mergedIndices: state.mergedIndices,
     metrics: { ...state.metrics },
     summary: event.label,
   };
@@ -41,6 +42,7 @@ export function reduceSortingEvent(
       const [leftIndex, rightIndex] = targetIndices;
 
       if (leftIndex !== undefined && rightIndex !== undefined) {
+        nextState.values = [...state.values];
         [nextState.values[leftIndex], nextState.values[rightIndex]] = [
           nextState.values[rightIndex],
           nextState.values[leftIndex],
@@ -57,6 +59,7 @@ export function reduceSortingEvent(
         ? event.payload.values
         : [event.payload?.value];
 
+      nextState.values = [...state.values];
       targetIndices.forEach((index, targetIndex) => {
         const nextValue = overwriteValues[targetIndex];
 
