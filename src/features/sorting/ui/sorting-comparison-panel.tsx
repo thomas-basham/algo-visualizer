@@ -8,6 +8,7 @@ import type {
   SortingAnimationState,
   SortingMetrics,
 } from "@/features/sorting/engine/types";
+import { SortingEducationPanel } from "@/features/sorting/ui/sorting-education-panel";
 import { SortingMetricsPanel } from "@/features/sorting/ui/sorting-metrics-panel";
 import { SortingBars } from "@/features/sorting/visualization/sorting-bars";
 
@@ -17,6 +18,9 @@ type SortingComparisonPanelProps = {
   status: PlaybackStatus;
   size: number;
   frameMessage: string;
+  stepTitle: string;
+  stepDetail: string;
+  activePseudocodeLine: number | null;
   metrics: SortingMetrics;
   state: SortingAnimationState;
   transitionMs: number;
@@ -61,6 +65,9 @@ function SortingComparisonPanelComponent({
   status,
   size,
   frameMessage,
+  stepTitle,
+  stepDetail,
+  activePseudocodeLine,
   metrics,
   state,
   transitionMs,
@@ -94,6 +101,15 @@ function SortingComparisonPanelComponent({
       </div>
 
       <div className="mt-6">
+        <SortingEducationPanel
+          algorithm={algorithm}
+          stepTitle={stepTitle}
+          stepDetail={stepDetail}
+          activeLine={activePseudocodeLine}
+        />
+      </div>
+
+      <div className="mt-6">
         <SortingMetricsPanel metrics={metrics} algorithm={algorithm} status={status} />
       </div>
     </SurfaceCard>
@@ -108,6 +124,9 @@ export const SortingComparisonPanel = memo(
     previousProps.status === nextProps.status &&
     previousProps.size === nextProps.size &&
     previousProps.frameMessage === nextProps.frameMessage &&
+    previousProps.stepTitle === nextProps.stepTitle &&
+    previousProps.stepDetail === nextProps.stepDetail &&
+    previousProps.activePseudocodeLine === nextProps.activePseudocodeLine &&
     previousProps.transitionMs === nextProps.transitionMs &&
     previousProps.performanceMode === nextProps.performanceMode &&
     previousProps.state === nextProps.state &&

@@ -8,6 +8,17 @@ export type SortingAlgorithmId =
   | "quick"
   | "native-js";
 
+export type SortingInputPresetId =
+  | "random"
+  | "nearly-sorted"
+  | "reversed"
+  | "few-unique";
+
+export type SortingPseudocodeLine = {
+  line: number;
+  code: string;
+};
+
 export type BigOSummary = {
   best: string;
   average: string;
@@ -21,6 +32,8 @@ export type SortingAlgorithmMeta = {
   id: SortingAlgorithmId;
   label: string;
   description: string;
+  beginnerExplanation: string;
+  pseudocode: SortingPseudocodeLine[];
   note?: string;
   implemented: boolean;
   bigO: BigOSummary;
@@ -37,6 +50,7 @@ export type SortingMetrics = {
 export type SortingComparisonConfig = {
   leftAlgorithmId: SortingAlgorithmId;
   rightAlgorithmId: SortingAlgorithmId;
+  inputPreset: SortingInputPresetId;
   size: number;
   speed: number;
   performanceMode: boolean;

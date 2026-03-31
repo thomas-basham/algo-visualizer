@@ -5,10 +5,12 @@ import { useState, useTransition } from "react";
 import { usePlaybackGroup } from "@/lib/animation/use-playback";
 import { SurfaceCard } from "@/components/ui/surface-card";
 import { SortingControls } from "@/features/sorting/controls/sorting-controls";
+import { getSortingStepExplanation } from "@/features/sorting/education/step-copy";
 import { buildSortingTimeline } from "@/features/sorting/engine/algorithms";
 import {
   availableSortingAlgorithms,
   defaultSortingConfig,
+  sortingInputPresets,
   standardSortingSizeMax,
   sortingAlgorithms,
 } from "@/features/sorting/engine/constants";
@@ -28,7 +30,10 @@ type SortingTimelines = {
 };
 
 const initialDatasetSeed = 17;
-const initialDataset = createDataset(defaultSortingConfig.size, initialDatasetSeed);
+const initialDataset = createDataset(defaultSortingConfig.size, {
+  preset: defaultSortingConfig.inputPreset,
+  seed: initialDatasetSeed,
+});
 
 function getStepDurationMs(speed: number) {
   return Math.max(6, Math.round(165 - speed * 2.1));
@@ -119,7 +124,12 @@ export function SortingVisualizer() {
 
   function handleSizeChange(size: number) {
     const nextConfig = { ...config, size };
-    replaceTimelines(nextConfig, createDataset(size));
+    replaceTimelines(nextConfig, createDataset(size, { preset: config.inputPreset }));
+  }
+
+  function handlePresetChange(inputPreset: SortingComparisonConfig["inputPreset"]) {
+    const nextConfig = { ...config, inputPreset };
+    replaceTimelines(nextConfig, createDataset(config.size, { preset: inputPreset }));
   }
 
   function handleSpeedChange(speed: number) {
@@ -155,11 +165,25 @@ export function SortingVisualizer() {
   }
 
   function handleRandomize() {
-    replaceTimelines(config, createDataset(config.size));
+    replaceTimelines(config, createDataset(config.size, { preset: config.inputPreset }));
   }
 
   const pauseResumeLabel = playback.status === "paused" ? "Resume" : "Pause";
   const canStepForward = playback.frameIndex < playback.maxFrameIndex;
+  const leftPreviousFrame =
+    timelines.left.frames[Math.max(0, leftRun.frameIndex - 1)] ?? null;
+  const rightPreviousFrame =
+    timelines.right.frames[Math.max(0, rightRun.frameIndex - 1)] ?? null;
+  const leftStep = getSortingStepExplanation(
+    leftAlgorithm.id,
+    leftRun.currentFrame,
+    leftPreviousFrame,
+  );
+  const rightStep = getSortingStepExplanation(
+    rightAlgorithm.id,
+    rightRun.currentFrame,
+    rightPreviousFrame,
+  );
 
   return (
     <div className="space-y-6">
@@ -169,10 +193,12 @@ export function SortingVisualizer() {
       >
         <SortingControls
           algorithms={availableSortingAlgorithms}
+          presets={sortingInputPresets}
           config={config}
           isPending={isPending}
           status={playback.status}
           onAlgorithmChange={handleAlgorithmChange}
+          onPresetChange={handlePresetChange}
           onSizeChange={handleSizeChange}
           onSpeedChange={handleSpeedChange}
           onPerformanceModeChange={handlePerformanceModeChange}
@@ -224,6 +250,9 @@ export function SortingVisualizer() {
           status={leftRun.status}
           size={config.size}
           frameMessage={leftRun.currentFrame.event?.label ?? leftRun.currentFrame.state.summary}
+          stepTitle={leftStep.title}
+          stepDetail={leftStep.detail}
+          activePseudocodeLine={leftStep.pseudocodeLine}
           metrics={leftMetrics}
           state={leftRun.currentFrame.state}
           transitionMs={
@@ -237,6 +266,9 @@ export function SortingVisualizer() {
           status={rightRun.status}
           size={config.size}
           frameMessage={rightRun.currentFrame.event?.label ?? rightRun.currentFrame.state.summary}
+          stepTitle={rightStep.title}
+          stepDetail={rightStep.detail}
+          activePseudocodeLine={rightStep.pseudocodeLine}
           metrics={rightMetrics}
           state={rightRun.currentFrame.state}
           transitionMs={

@@ -11,14 +11,21 @@ import type {
   SortingAlgorithmId,
   SortingAlgorithmMeta,
   SortingComparisonConfig,
+  SortingInputPresetId,
 } from "@/features/sorting/engine/types";
 
 type SortingControlsProps = {
   algorithms: SortingAlgorithmMeta[];
+  presets: Array<{
+    id: SortingInputPresetId;
+    label: string;
+    description: string;
+  }>;
   config: SortingComparisonConfig;
   isPending: boolean;
   status: PlaybackStatus;
   onAlgorithmChange: (side: "left" | "right", algorithmId: SortingAlgorithmId) => void;
+  onPresetChange: (preset: SortingInputPresetId) => void;
   onSizeChange: (size: number) => void;
   onSpeedChange: (speed: number) => void;
   onPerformanceModeChange: (enabled: boolean) => void;
@@ -40,10 +47,12 @@ const statusCopy: Record<PlaybackStatus, string> = {
 
 export function SortingControls({
   algorithms,
+  presets,
   config,
   isPending,
   status,
   onAlgorithmChange,
+  onPresetChange,
   onSizeChange,
   onSpeedChange,
   onPerformanceModeChange,
@@ -130,7 +139,32 @@ export function SortingControls({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-[0.95fr_1fr_1fr]">
+        <label className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Input Preset
+            </span>
+            <span className="text-sm font-medium text-slate-200">
+              {presets.find((preset) => preset.id === config.inputPreset)?.label ?? "Random"}
+            </span>
+          </div>
+          <select
+            value={config.inputPreset}
+            onChange={(event) => onPresetChange(event.target.value as SortingInputPresetId)}
+            className="w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40"
+          >
+            {presets.map((preset) => (
+              <option key={preset.id} value={preset.id} className="bg-slate-950">
+                {preset.label}
+              </option>
+            ))}
+          </select>
+          <div className="text-xs leading-6 text-slate-400">
+            {presets.find((preset) => preset.id === config.inputPreset)?.description}
+          </div>
+        </label>
+
         <label className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
