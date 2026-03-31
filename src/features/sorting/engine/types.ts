@@ -30,11 +30,13 @@ export type SortingMetrics = {
   comparisons: number;
   swaps: number;
   overwrites: number;
+  operations: number;
   elapsedMs: number;
 };
 
-export type SortingRunConfig = {
-  algorithmId: SortingAlgorithmId;
+export type SortingComparisonConfig = {
+  leftAlgorithmId: SortingAlgorithmId;
+  rightAlgorithmId: SortingAlgorithmId;
   size: number;
   speed: number;
 };

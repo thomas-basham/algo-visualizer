@@ -13,6 +13,7 @@ export function createBaseMetrics(): SortingMetrics {
     comparisons: 0,
     swaps: 0,
     overwrites: 0,
+    operations: 0,
     elapsedMs: 0,
   };
 }

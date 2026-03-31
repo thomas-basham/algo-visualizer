@@ -1,4 +1,7 @@
-import type { SortingAlgorithmMeta, SortingRunConfig } from "@/features/sorting/engine/types";
+import type {
+  SortingAlgorithmMeta,
+  SortingComparisonConfig,
+} from "@/features/sorting/engine/types";
 
 export const sortingAlgorithms: SortingAlgorithmMeta[] = [
   {
@@ -92,8 +95,9 @@ export const availableSortingAlgorithms = sortingAlgorithms.filter(
   (algorithm) => algorithm.implemented,
 );
 
-export const defaultSortingConfig: SortingRunConfig = {
-  algorithmId: "bubble",
+export const defaultSortingConfig: SortingComparisonConfig = {
+  leftAlgorithmId: "bubble",
+  rightAlgorithmId: "quick",
   size: 24,
   speed: 72,
 };
