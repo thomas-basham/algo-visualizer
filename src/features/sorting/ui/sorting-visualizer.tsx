@@ -2,10 +2,8 @@
 
 import { useState, useTransition } from "react";
 
-import { usePlaybackTimeline } from "@/lib/animation/use-playback";
-import type { PlaybackStatus } from "@/lib/animation/types";
+import { usePlaybackGroup } from "@/lib/animation/use-playback";
 import { SurfaceCard } from "@/components/ui/surface-card";
-import { StatusPill } from "@/components/ui/status-pill";
 import { SortingControls } from "@/features/sorting/controls/sorting-controls";
 import { buildSortingTimeline } from "@/features/sorting/engine/algorithms";
 import {
@@ -14,9 +12,19 @@ import {
   sortingAlgorithms,
 } from "@/features/sorting/engine/constants";
 import { createBaseMetrics, createDataset } from "@/features/sorting/engine/sample-run";
-import type { SortingAlgorithmId, SortingRunConfig, SortingTimeline } from "@/features/sorting/engine/types";
-import { SortingMetricsPanel } from "@/features/sorting/ui/sorting-metrics-panel";
-import { SortingBars } from "@/features/sorting/visualization/sorting-bars";
+import type {
+  SortingAlgorithmId,
+  SortingComparisonConfig,
+  SortingMetrics,
+  SortingTimeline,
+} from "@/features/sorting/engine/types";
+import { SortingComparisonPanel } from "@/features/sorting/ui/sorting-comparison-panel";
+import { SortingWinnerSummary } from "@/features/sorting/ui/sorting-winner-summary";
+
+type SortingTimelines = {
+  left: SortingTimeline;
+  right: SortingTimeline;
+};
 
 const initialDataset = createDataset(defaultSortingConfig.size);
 
@@ -24,74 +32,92 @@ function getStepDurationMs(speed: number) {
   return Math.max(6, Math.round(165 - speed * 2.1));
 }
 
-function getStatusTone(status: PlaybackStatus) {
-  if (status === "completed") {
-    return "success";
-  }
-
-  if (status === "paused") {
-    return "warning";
-  }
-
-  if (status === "playing") {
-    return "accent";
-  }
-
-  return "neutral";
+function createSortingTimelines(
+  config: SortingComparisonConfig,
+  dataset: number[],
+): SortingTimelines {
+  return {
+    left: buildSortingTimeline(config.leftAlgorithmId, dataset),
+    right: buildSortingTimeline(config.rightAlgorithmId, dataset),
+  };
 }
 
-function getStatusLabel(status: PlaybackStatus) {
-  if (status === "completed") {
-    return "Run Complete";
-  }
-
-  if (status === "paused") {
-    return "Paused";
-  }
-
-  if (status === "playing") {
-    return "Running";
-  }
-
-  return "Ready";
+function createLiveMetrics(
+  comparisons: number,
+  swaps: number,
+  overwrites: number,
+  operations: number,
+  elapsedMs: number,
+): SortingMetrics {
+  return {
+    ...createBaseMetrics(),
+    comparisons,
+    swaps,
+    overwrites,
+    operations,
+    elapsedMs,
+  };
 }
 
 export function SortingVisualizer() {
-  const [config, setConfig] = useState<SortingRunConfig>(defaultSortingConfig);
+  const [config, setConfig] = useState<SortingComparisonConfig>(defaultSortingConfig);
   const [dataset, setDataset] = useState(initialDataset);
-  const [timeline, setTimeline] = useState<SortingTimeline>(() =>
-    buildSortingTimeline(defaultSortingConfig.algorithmId, initialDataset),
+  const [timelines, setTimelines] = useState<SortingTimelines>(() =>
+    createSortingTimelines(defaultSortingConfig, initialDataset),
   );
   const [isPending, startTransition] = useTransition();
 
-  const selectedAlgorithm =
-    sortingAlgorithms.find((algorithm) => algorithm.id === config.algorithmId) ??
+  const leftAlgorithm =
+    sortingAlgorithms.find((algorithm) => algorithm.id === config.leftAlgorithmId) ??
     availableSortingAlgorithms[0];
-  const stepDuration = getStepDurationMs(config.speed);
-  const playback = usePlaybackTimeline(timeline, stepDuration);
-  const currentFrame = playback.currentFrame;
-  const liveMetrics = {
-    ...createBaseMetrics(),
-    comparisons: currentFrame.state.metrics.comparisons,
-    swaps: currentFrame.state.metrics.swaps,
-    elapsedMs: playback.elapsedMs,
-  };
+  const rightAlgorithm =
+    sortingAlgorithms.find((algorithm) => algorithm.id === config.rightAlgorithmId) ??
+    availableSortingAlgorithms[1] ??
+    availableSortingAlgorithms[0];
 
-  function replaceTimeline(nextConfig: SortingRunConfig, nextDataset = dataset) {
+  const stepDuration = getStepDurationMs(config.speed);
+  const playback = usePlaybackGroup(timelines, stepDuration);
+  const leftRun = playback.runs.left;
+  const rightRun = playback.runs.right;
+
+  const leftMetrics = createLiveMetrics(
+    leftRun.currentFrame.state.metrics.comparisons,
+    leftRun.currentFrame.state.metrics.swaps,
+    leftRun.currentFrame.state.metrics.overwrites,
+    leftRun.frameIndex,
+    leftRun.elapsedMs,
+  );
+  const rightMetrics = createLiveMetrics(
+    rightRun.currentFrame.state.metrics.comparisons,
+    rightRun.currentFrame.state.metrics.swaps,
+    rightRun.currentFrame.state.metrics.overwrites,
+    rightRun.frameIndex,
+    rightRun.elapsedMs,
+  );
+
+  function replaceTimelines(
+    nextConfig: SortingComparisonConfig,
+    nextDataset = dataset,
+  ) {
     startTransition(() => {
       setConfig(nextConfig);
       setDataset(nextDataset);
-      setTimeline(buildSortingTimeline(nextConfig.algorithmId, nextDataset));
+      setTimelines(createSortingTimelines(nextConfig, nextDataset));
     });
   }
 
-  function handleAlgorithmChange(algorithmId: SortingAlgorithmId) {
-    replaceTimeline({ ...config, algorithmId });
+  function handleAlgorithmChange(side: "left" | "right", algorithmId: SortingAlgorithmId) {
+    if (side === "left") {
+      replaceTimelines({ ...config, leftAlgorithmId: algorithmId });
+      return;
+    }
+
+    replaceTimelines({ ...config, rightAlgorithmId: algorithmId });
   }
 
   function handleSizeChange(size: number) {
     const nextConfig = { ...config, size };
-    replaceTimeline(nextConfig, createDataset(size));
+    replaceTimelines(nextConfig, createDataset(size));
   }
 
   function handleSpeedChange(speed: number) {
@@ -107,81 +133,85 @@ export function SortingVisualizer() {
     playback.play();
   }
 
-  function handleReset() {
-    playback.reset();
-  }
-
   function handleRandomize() {
-    replaceTimeline(config, createDataset(config.size));
+    replaceTimelines(config, createDataset(config.size));
   }
 
   const pauseResumeLabel = playback.status === "paused" ? "Resume" : "Pause";
-  const canStepForward = playback.frameIndex < timeline.frames.length - 1;
-  const frameMessage = currentFrame.event?.label ?? currentFrame.state.summary;
+  const canStepForward = playback.frameIndex < playback.maxFrameIndex;
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <SurfaceCard
-          title="Control Surface"
-          description="Algorithms emit events. A reducer turns those events into frames, and the playback engine drives the UI."
-        >
-          <SortingControls
-            algorithms={availableSortingAlgorithms}
-            config={config}
-            isPending={isPending}
-            status={playback.status}
-            onAlgorithmChange={handleAlgorithmChange}
-            onSizeChange={handleSizeChange}
-            onSpeedChange={handleSpeedChange}
-            onPlay={playback.play}
-            onPauseResume={handlePauseResume}
-            onStepForward={playback.stepForward}
-            onReset={handleReset}
-            onRandomize={handleRandomize}
-            pauseResumeLabel={pauseResumeLabel}
-            canStepForward={canStepForward}
-          />
-        </SurfaceCard>
-
-        <SurfaceCard
-          title={selectedAlgorithm.label}
-          description={selectedAlgorithm.description}
-          className="flex flex-col justify-between"
-        >
-          <div className="flex flex-wrap gap-2">
-            <StatusPill label={getStatusLabel(playback.status)} tone={getStatusTone(playback.status)} />
-            <StatusPill label={`${config.size} Bars`} tone="neutral" />
-          </div>
-          <div className="mt-6 text-sm leading-7 text-slate-300">
-            {frameMessage}. Bubble, Selection, Insertion, Merge, Quick, and the native sort
-            approximation all run through the same event pipeline, so the playback model stays
-            consistent even when the visualization semantics change.
-          </div>
-        </SurfaceCard>
-      </div>
-
       <SurfaceCard
-        title="Visualization Layer"
-        description="The bar view consumes reducer-built frames instead of direct algorithm mutations, including overwrite, pivot, and merge states."
+        title="Comparison Controls"
+        description="Choose two algorithms, then run them on the same starting array with one shared playback engine."
       >
-        <SortingBars
-          values={currentFrame.state.values}
-          comparedIndices={currentFrame.state.comparedIndices}
-          swappedIndices={currentFrame.state.swappedIndices}
-          overwrittenIndices={currentFrame.state.overwrittenIndices}
-          sortedIndices={currentFrame.state.sortedIndices}
-          pivotIndices={currentFrame.state.pivotIndices}
-          mergedIndices={currentFrame.state.mergedIndices}
-          transitionMs={Math.max(12, Math.round(stepDuration * 0.9))}
+        <SortingControls
+          algorithms={availableSortingAlgorithms}
+          config={config}
+          isPending={isPending}
+          status={playback.status}
+          onAlgorithmChange={handleAlgorithmChange}
+          onSizeChange={handleSizeChange}
+          onSpeedChange={handleSpeedChange}
+          onPlay={playback.play}
+          onPauseResume={handlePauseResume}
+          onStepForward={playback.stepForward}
+          onReset={playback.reset}
+          onRandomize={handleRandomize}
+          pauseResumeLabel={pauseResumeLabel}
+          canStepForward={canStepForward}
         />
       </SurfaceCard>
 
-      <SortingMetricsPanel
-        metrics={liveMetrics}
-        algorithm={selectedAlgorithm}
-        status={playback.status}
-      />
+      {playback.status === "completed" ? (
+        <SortingWinnerSummary
+          leftLabel={leftAlgorithm.label}
+          rightLabel={rightAlgorithm.label}
+          leftMetrics={leftMetrics}
+          rightMetrics={rightMetrics}
+        />
+      ) : (
+        <SurfaceCard
+          title="Synchronization Model"
+          description="Both timelines advance on the same clock. If one run finishes early, it freezes on its final frame while the other continues."
+        >
+          <div className="grid gap-4 text-sm leading-7 text-slate-300 md:grid-cols-3">
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+              Left: {leftAlgorithm.label}
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+              Right: {rightAlgorithm.label}
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+              Shared operations elapsed: {playback.frameIndex} / {playback.maxFrameIndex}
+            </div>
+          </div>
+        </SurfaceCard>
+      )}
+
+      <div className="grid gap-6 2xl:grid-cols-2">
+        <SortingComparisonPanel
+          panelLabel="Left Panel"
+          algorithm={leftAlgorithm}
+          status={leftRun.status}
+          size={config.size}
+          frameMessage={leftRun.currentFrame.event?.label ?? leftRun.currentFrame.state.summary}
+          metrics={leftMetrics}
+          state={leftRun.currentFrame.state}
+          transitionMs={Math.max(12, Math.round(stepDuration * 0.9))}
+        />
+        <SortingComparisonPanel
+          panelLabel="Right Panel"
+          algorithm={rightAlgorithm}
+          status={rightRun.status}
+          size={config.size}
+          frameMessage={rightRun.currentFrame.event?.label ?? rightRun.currentFrame.state.summary}
+          metrics={rightMetrics}
+          state={rightRun.currentFrame.state}
+          transitionMs={Math.max(12, Math.round(stepDuration * 0.9))}
+        />
+      </div>
     </div>
   );
 }

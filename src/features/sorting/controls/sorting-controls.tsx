@@ -5,15 +5,15 @@ import type { PlaybackStatus } from "@/lib/animation/types";
 import type {
   SortingAlgorithmId,
   SortingAlgorithmMeta,
-  SortingRunConfig,
+  SortingComparisonConfig,
 } from "@/features/sorting/engine/types";
 
 type SortingControlsProps = {
   algorithms: SortingAlgorithmMeta[];
-  config: SortingRunConfig;
+  config: SortingComparisonConfig;
   isPending: boolean;
   status: PlaybackStatus;
-  onAlgorithmChange: (algorithmId: SortingAlgorithmId) => void;
+  onAlgorithmChange: (side: "left" | "right", algorithmId: SortingAlgorithmId) => void;
   onSizeChange: (size: number) => void;
   onSpeedChange: (speed: number) => void;
   onPlay: () => void;
@@ -29,7 +29,7 @@ const statusCopy: Record<PlaybackStatus, string> = {
   ready: "Ready",
   playing: "Animating",
   paused: "Paused",
-  completed: "Sorted",
+  completed: "Complete",
 };
 
 export function SortingControls({
@@ -50,27 +50,50 @@ export function SortingControls({
 }: SortingControlsProps) {
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
-        <label className="space-y-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Algorithm
-          </span>
-          <select
-            value={config.algorithmId}
-            onChange={(event) => onAlgorithmChange(event.target.value as SortingAlgorithmId)}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40"
-          >
-            {algorithms.map((algorithm) => (
-              <option key={algorithm.id} value={algorithm.id} className="bg-slate-950">
-                {algorithm.label}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Left Algorithm
+            </span>
+            <select
+              value={config.leftAlgorithmId}
+              onChange={(event) =>
+                onAlgorithmChange("left", event.target.value as SortingAlgorithmId)
+              }
+              className="w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40"
+            >
+              {algorithms.map((algorithm) => (
+                <option key={algorithm.id} value={algorithm.id} className="bg-slate-950">
+                  {algorithm.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Right Algorithm
+            </span>
+            <select
+              value={config.rightAlgorithmId}
+              onChange={(event) =>
+                onAlgorithmChange("right", event.target.value as SortingAlgorithmId)
+              }
+              className="w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-300/40"
+            >
+              {algorithms.map((algorithm) => (
+                <option key={algorithm.id} value={algorithm.id} className="bg-slate-950">
+                  {algorithm.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Run State
+            Shared Run State
           </div>
           <div className="mt-3 flex items-center justify-between gap-4">
             <div className="text-sm font-medium text-white">{statusCopy[status]}</div>
@@ -88,6 +111,10 @@ export function SortingControls({
             >
               {isPending ? "Refreshing" : statusCopy[status]}
             </span>
+          </div>
+          <div className="mt-3 text-sm leading-6 text-slate-300">
+            Both panels replay the same dataset from one playback clock, so comparisons stay
+            synchronized even when one algorithm completes ahead of the other.
           </div>
         </div>
       </div>
@@ -170,7 +197,7 @@ export function SortingControls({
           Randomize
         </button>
         <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-slate-300">
-          {isPending ? "Rebuilding timeline..." : "Event-driven playback"}
+          {isPending ? "Rebuilding timelines..." : "Synchronized event playback"}
         </span>
       </div>
     </div>
