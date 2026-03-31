@@ -1,18 +1,22 @@
-import { createInitialFrame } from "@/features/sorting/engine/sample-run";
-import type {
-  SortingAlgorithmId,
-  SortingFrame,
-  SortingRun,
-} from "@/features/sorting/engine/types";
+import { buildTimeline } from "@/lib/animation/timeline";
+import type { VisualizationEvent } from "@/lib/animation/types";
+import { createSortingEvent } from "@/features/sorting/engine/event-helpers";
+import { reduceSortingEvent } from "@/features/sorting/engine/reducer";
+import { createInitialSortingState } from "@/features/sorting/engine/sample-run";
+import type { SortingAlgorithmId, SortingTimeline } from "@/features/sorting/engine/types";
 
-type SortingImplementation = (values: number[]) => SortingRun;
+type SortingImplementation = (values: number[]) => VisualizationEvent[];
 
-type FrameRecorder = {
+type EventRecorder = {
   values: number[];
+  events: VisualizationEvent[];
   compare: (leftIndex: number, rightIndex: number) => number;
   swap: (leftIndex: number, rightIndex: number) => void;
+  overwrite: (targetIndex: number, value: number, label: string) => void;
   markSorted: (indices: number[], label: string) => void;
-  finish: () => SortingRun;
+  pivot: (indices: number[], label: string) => void;
+  merge: (indices: number[], label: string) => void;
+  finish: () => VisualizationEvent[];
 };
 
 function createIndexRange(start: number, end: number) {
@@ -23,43 +27,21 @@ function createIndexRange(start: number, end: number) {
   return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 }
 
-function createRecorder(initialValues: number[]): FrameRecorder {
+function createRecorder(initialValues: number[]): EventRecorder {
   const values = [...initialValues];
-  const sortedIndices = new Set<number>();
-  let comparisons = 0;
-  let swaps = 0;
-  const frames: SortingFrame[] = [createInitialFrame(values)];
+  const events: VisualizationEvent[] = [];
 
-  function pushFrame({
-    label,
-    comparedIndices = [],
-    swappedIndices = [],
-  }: {
-    label: string;
-    comparedIndices?: number[];
-    swappedIndices?: number[];
-  }) {
-    frames.push({
-      values: [...values],
-      comparedIndices,
-      swappedIndices,
-      sortedIndices: [...sortedIndices].sort((left, right) => left - right),
-      metrics: {
-        comparisons,
-        swaps,
-      },
-      label,
-    });
+  function pushEvent(event: VisualizationEvent) {
+    events.push(event);
   }
 
   return {
     values,
+    events,
     compare(leftIndex, rightIndex) {
-      comparisons += 1;
-      pushFrame({
-        label: `Comparing ${leftIndex + 1} and ${rightIndex + 1}`,
-        comparedIndices: [leftIndex, rightIndex],
-      });
+      pushEvent(
+        createSortingEvent("compare", [leftIndex, rightIndex], `Comparing ${leftIndex + 1} and ${rightIndex + 1}`),
+      );
 
       return values[leftIndex] - values[rightIndex];
     },
@@ -69,40 +51,34 @@ function createRecorder(initialValues: number[]): FrameRecorder {
       }
 
       [values[leftIndex], values[rightIndex]] = [values[rightIndex], values[leftIndex]];
-      swaps += 1;
-
-      pushFrame({
-        label: `Swapping ${leftIndex + 1} and ${rightIndex + 1}`,
-        swappedIndices: [leftIndex, rightIndex],
-      });
+      pushEvent(
+        createSortingEvent("swap", [leftIndex, rightIndex], `Swapping ${leftIndex + 1} and ${rightIndex + 1}`),
+      );
+    },
+    overwrite(targetIndex, value, label) {
+      values[targetIndex] = value;
+      pushEvent(createSortingEvent("overwrite", [targetIndex], label, { value }));
     },
     markSorted(indices, label) {
-      let changed = false;
-
-      for (const index of indices) {
-        if (!sortedIndices.has(index)) {
-          sortedIndices.add(index);
-          changed = true;
-        }
-      }
-
-      if (changed) {
-        pushFrame({ label });
-      }
+      pushEvent(createSortingEvent("markSorted", indices, label));
+    },
+    pivot(indices, label) {
+      pushEvent(createSortingEvent("pivot", indices, label));
+    },
+    merge(indices, label) {
+      pushEvent(createSortingEvent("merge", indices, label));
     },
     finish() {
-      for (const index of createIndexRange(0, values.length - 1)) {
-        sortedIndices.add(index);
-      }
+      pushEvent(
+        createSortingEvent("markSorted", createIndexRange(0, values.length - 1), "Sorting complete"),
+      );
 
-      pushFrame({ label: "Sorting complete" });
-
-      return { frames };
+      return events;
     },
   };
 }
 
-function runBubbleSort(initialValues: number[]): SortingRun {
+function emitBubbleSortEvents(initialValues: number[]) {
   const recorder = createRecorder(initialValues);
   const { values } = recorder;
 
@@ -131,7 +107,7 @@ function runBubbleSort(initialValues: number[]): SortingRun {
   return recorder.finish();
 }
 
-function runSelectionSort(initialValues: number[]): SortingRun {
+function emitSelectionSortEvents(initialValues: number[]) {
   const recorder = createRecorder(initialValues);
   const { values } = recorder;
 
@@ -151,7 +127,7 @@ function runSelectionSort(initialValues: number[]): SortingRun {
   return recorder.finish();
 }
 
-function runInsertionSort(initialValues: number[]): SortingRun {
+function emitInsertionSortEvents(initialValues: number[]) {
   const recorder = createRecorder(initialValues);
   const { values } = recorder;
 
@@ -179,17 +155,26 @@ function runInsertionSort(initialValues: number[]): SortingRun {
 
 const implementations: Record<Extract<SortingAlgorithmId, "bubble" | "selection" | "insertion">, SortingImplementation> =
   {
-    bubble: runBubbleSort,
-    selection: runSelectionSort,
-    insertion: runInsertionSort,
+    bubble: emitBubbleSortEvents,
+    selection: emitSelectionSortEvents,
+    insertion: emitInsertionSortEvents,
   };
 
-export function buildSortingRun(algorithmId: SortingAlgorithmId, values: number[]): SortingRun {
+export function buildSortingTimeline(
+  algorithmId: SortingAlgorithmId,
+  values: number[],
+): SortingTimeline {
   const implementation = implementations[algorithmId as keyof typeof implementations];
 
   if (!implementation) {
     throw new Error(`Algorithm "${algorithmId}" is not implemented yet.`);
   }
 
-  return implementation(values);
+  const events = implementation(values);
+
+  return buildTimeline({
+    initialState: createInitialSortingState(values),
+    events,
+    reducer: reduceSortingEvent,
+  });
 }

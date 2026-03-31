@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import type { PlaybackStatus } from "@/lib/animation/types";
 import type {
-  PlaybackStatus,
   SortingAlgorithmId,
   SortingAlgorithmMeta,
   SortingRunConfig,
@@ -16,11 +16,13 @@ type SortingControlsProps = {
   onAlgorithmChange: (algorithmId: SortingAlgorithmId) => void;
   onSizeChange: (size: number) => void;
   onSpeedChange: (speed: number) => void;
-  onStart: () => void;
+  onPlay: () => void;
   onPauseResume: () => void;
+  onStepForward: () => void;
   onReset: () => void;
   onRandomize: () => void;
   pauseResumeLabel: string;
+  canStepForward: boolean;
 };
 
 const statusCopy: Record<PlaybackStatus, string> = {
@@ -38,11 +40,13 @@ export function SortingControls({
   onAlgorithmChange,
   onSizeChange,
   onSpeedChange,
-  onStart,
+  onPlay,
   onPauseResume,
+  onStepForward,
   onReset,
   onRandomize,
   pauseResumeLabel,
+  canStepForward,
 }: SortingControlsProps) {
   return (
     <div className="space-y-6">
@@ -129,11 +133,11 @@ export function SortingControls({
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={onStart}
+          onClick={onPlay}
           disabled={isPending || status === "playing"}
           className="inline-flex items-center rounded-full border border-cyan-300/25 bg-cyan-300/12 px-4 py-2.5 text-sm font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:bg-cyan-300/16 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Start
+          Play
         </button>
         <button
           type="button"
@@ -142,6 +146,14 @@ export function SortingControls({
           className="inline-flex items-center rounded-full border border-amber-300/20 bg-amber-300/10 px-4 py-2.5 text-sm font-medium text-amber-100 transition hover:border-amber-300/35 hover:bg-amber-300/16 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pauseResumeLabel}
+        </button>
+        <button
+          type="button"
+          onClick={onStepForward}
+          disabled={!canStepForward || status === "playing"}
+          className="inline-flex items-center rounded-full border border-emerald-300/20 bg-emerald-300/10 px-4 py-2.5 text-sm font-medium text-emerald-100 transition hover:border-emerald-300/35 hover:bg-emerald-300/16 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Step
         </button>
         <button
           type="button"
@@ -158,7 +170,7 @@ export function SortingControls({
           Randomize
         </button>
         <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-slate-300">
-          {isPending ? "Updating dataset..." : "Real-time frame playback"}
+          {isPending ? "Rebuilding timeline..." : "Event-driven playback"}
         </span>
       </div>
     </div>

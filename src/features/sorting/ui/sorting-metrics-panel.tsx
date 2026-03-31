@@ -1,10 +1,7 @@
+import type { PlaybackStatus } from "@/lib/animation/types";
 import { MetricTile } from "@/components/ui/metric-tile";
 import { SurfaceCard } from "@/components/ui/surface-card";
-import type {
-  PlaybackStatus,
-  SortingAlgorithmMeta,
-  SortingMetrics,
-} from "@/features/sorting/engine/types";
+import type { SortingAlgorithmMeta, SortingMetrics } from "@/features/sorting/engine/types";
 
 type SortingMetricsPanelProps = {
   metrics: SortingMetrics;
@@ -30,7 +27,7 @@ export function SortingMetricsPanel({
     <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
       <SurfaceCard
         title="Run Metrics"
-        description="These values update as each comparison and swap frame is applied."
+        description="Metrics are derived from emitted events, then replayed through the timeline."
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <MetricTile label="Comparisons" value={metrics.comparisons} />

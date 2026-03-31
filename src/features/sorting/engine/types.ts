@@ -1,3 +1,5 @@
+import type { VisualizationEvent, VisualizationTimeline } from "@/lib/animation/types";
+
 export type SortingAlgorithmId =
   | "bubble"
   | "selection"
@@ -5,8 +7,6 @@ export type SortingAlgorithmId =
   | "merge"
   | "quick"
   | "native-js";
-
-export type PlaybackStatus = "ready" | "playing" | "paused" | "completed";
 
 export type BigOSummary = {
   best: string;
@@ -28,6 +28,7 @@ export type SortingAlgorithmMeta = {
 export type SortingMetrics = {
   comparisons: number;
   swaps: number;
+  overwrites: number;
   elapsedMs: number;
 };
 
@@ -37,15 +38,18 @@ export type SortingRunConfig = {
   speed: number;
 };
 
-export type SortingFrame = {
+export type SortingAnimationState = {
   values: number[];
   comparedIndices: number[];
   swappedIndices: number[];
+  overwrittenIndices: number[];
   sortedIndices: number[];
-  metrics: Pick<SortingMetrics, "comparisons" | "swaps">;
-  label: string;
+  pivotIndices: number[];
+  mergedIndices: number[];
+  metrics: Pick<SortingMetrics, "comparisons" | "swaps" | "overwrites">;
+  summary: string;
 };
 
-export type SortingRun = {
-  frames: SortingFrame[];
-};
+export type SortingEvent = VisualizationEvent;
+
+export type SortingTimeline = VisualizationTimeline<SortingAnimationState>;
