@@ -2,6 +2,8 @@
 
 An educational web app scaffold for visualizing algorithms and data structures with a feature-first architecture.
 
+**Demo:** [https://main.d2ohi5jza0cs1j.amplifyapp.com](https://main.d2ohi5jza0cs1j.amplifyapp.com)
+
 ## Stack
 
 - Next.js App Router
@@ -29,4 +31,3 @@ src/
 npm install
 npm run dev
 ```
-
