@@ -1,6 +1,8 @@
 export type VisualizationEventType =
   | "annotate"
   | "compare"
+  | "insert"
+  | "remove"
   | "swap"
   | "overwrite"
   | "markSorted"
