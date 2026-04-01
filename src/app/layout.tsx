@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Manrope, Space_Grotesk } from "next/font/google";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 import "@/app/globals.css";
 
 const manrope = Manrope({
@@ -16,9 +17,59 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Algo Visualizer",
-  description:
-    "A polished educational web app scaffold for real-time data structure and algorithm visualization.",
+  metadataBase: new URL(siteConfig.url),
+  applicationName: siteConfig.name,
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  alternates: {
+    canonical: absoluteUrl(),
+  },
+  category: "technology",
+  openGraph: {
+    type: "website",
+    locale: siteConfig.locale,
+    url: absoluteUrl(),
+    siteName: siteConfig.name,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [
+      {
+        url: absoluteUrl("/opengraph-image"),
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} social preview`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [absoluteUrl("/twitter-image")],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  appleWebApp: {
+    capable: true,
+    title: siteConfig.shortName,
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#040813",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
