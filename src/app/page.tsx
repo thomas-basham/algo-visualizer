@@ -14,14 +14,20 @@ const featureCards = [
   {
     title: "Searching Lab",
     description:
-      "Prepared route for linear and binary search walkthroughs with state snapshots and algorithm annotations.",
+      "Linear Search and Binary Search walkthroughs with event-driven playback and learning panels.",
     href: "/searching",
   },
   {
     title: "Data Structures",
     description:
-      "Future modules for trees, queues, stacks, linked lists, and graph traversal visualizers.",
+      "Interactive stack, queue, linked list, and binary search tree operations with shared playback.",
     href: "/data-structures",
+  },
+  {
+    title: "Graph Lab",
+    description:
+      "Breadth-First Search and Depth-First Search traversals with node, edge, and frontier playback.",
+    href: "/graphs",
   },
 ];
 
@@ -36,7 +42,7 @@ const architectureCards = [
   },
   {
     title: "Visualization adapters",
-    body: "Sorting bars now, graphs and trees later. Each renderer consumes snapshots rather than route state.",
+    body: "Bars, arrays, graphs, and tree layouts all consume playback snapshots rather than route state.",
   },
 ];
 
@@ -74,9 +80,9 @@ export default function HomePage() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
               <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Routes</div>
-              <div className="mt-3 text-3xl font-semibold tracking-tight text-white">4</div>
+              <div className="mt-3 text-3xl font-semibold tracking-tight text-white">6</div>
               <div className="mt-2 text-sm leading-6 text-slate-400">
-                Home, Sorting, Searching, Data Structures, and About are scaffolded with App Router.
+                Home, Sorting, Searching, Data Structures, Graphs, and About are scaffolded with App Router.
               </div>
             </div>
             <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
@@ -116,14 +122,14 @@ export default function HomePage() {
             <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
               <StatusPill label="Phase 3" tone="warning" />
               <div className="mt-3 text-sm leading-6 text-slate-300">
-                Add graph, tree, and linear data structure labs using the same shell patterns.
+                Extend the graph and structure labs with weighted graphs, shortest paths, and balanced trees.
               </div>
             </div>
           </div>
         </SurfaceCard>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid gap-6 xl:grid-cols-4">
         {featureCards.map((card) => (
           <SurfaceCard key={card.title} title={card.title} description={card.description}>
             <Link
@@ -152,4 +158,3 @@ export default function HomePage() {
     </div>
   );
 }
-

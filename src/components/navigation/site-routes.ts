@@ -18,12 +18,17 @@ export const siteRoutes: SiteRoute[] = [
   {
     href: "/searching",
     label: "Searching Visualizer",
-    description: "Placeholder route for search walkthroughs",
+    description: "Linear and binary search playback with guided explanations",
   },
   {
     href: "/data-structures",
     label: "Data Structures",
-    description: "Placeholder route for stacks, queues, trees, and more",
+    description: "Interactive stacks, queues, linked lists, and tree operations",
+  },
+  {
+    href: "/graphs",
+    label: "Graph Visualizer",
+    description: "Breadth-first and depth-first traversal with live frontier state",
   },
   {
     href: "/about",
@@ -31,4 +36,3 @@ export const siteRoutes: SiteRoute[] = [
     description: "Architecture, intent, and expansion plan",
   },
 ];
-
