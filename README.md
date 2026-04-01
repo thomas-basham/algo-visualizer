@@ -9,6 +9,7 @@ An educational web app scaffold for visualizing algorithms and data structures w
 - Next.js App Router
 - React + TypeScript
 - Tailwind CSS
+- Vitest + React Testing Library
 
 ## Project Structure
 
@@ -30,4 +31,16 @@ src/
 ```bash
 npm install
 npm run dev
+npm test
 ```
+
+## Testing
+
+The recommended testing stack for this app is:
+
+- `Vitest` for unit and component tests
+- `React Testing Library` with `user-event` for control and rendering tests
+- `jsdom` for browser-like component execution
+- `Playwright` later for end-to-end coverage if deployment flows need browser-level validation
+
+Testing strategy details live in [docs/testing-strategy.md](docs/testing-strategy.md).
