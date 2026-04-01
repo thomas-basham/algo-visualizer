@@ -3,6 +3,7 @@ export type VisualizationEventType =
   | "compare"
   | "insert"
   | "remove"
+  | "visit"
   | "swap"
   | "overwrite"
   | "markSorted"
