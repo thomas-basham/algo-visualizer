@@ -1,12 +1,31 @@
+import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/ui/page-hero";
-import { DataStructuresVisualizer } from "@/features/data-structures/ui/data-structures-visualizer";
+import { ModuleLoadingCard } from "@/components/ui/module-loading-card";
+import { createPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Data Structures | Algo Visualizer",
+const DataStructuresVisualizer = dynamic(
+  () =>
+    import("@/features/data-structures/ui/data-structures-visualizer").then(
+      (module) => module.DataStructuresVisualizer,
+    ),
+  {
+    loading: () => (
+      <ModuleLoadingCard
+        title="Loading Data Structures Lab"
+        description="Preparing structure operations, visual renderers, and playback guidance."
+      />
+    ),
+  },
+);
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Data Structures Visualizer",
   description: "Interactive data-structure demos for stack, queue, linked list, and BST operations.",
-};
+  path: "/data-structures",
+  keywords: ["stack visualizer", "queue visualizer", "linked list visualizer", "binary search tree visualizer"],
+});
 
 export default function DataStructuresPage() {
   return (

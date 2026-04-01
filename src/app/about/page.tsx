@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 
 import { PageHero } from "@/components/ui/page-hero";
 import { SurfaceCard } from "@/components/ui/surface-card";
+import { createPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About | Algo Visualizer",
-  description: "Architecture notes and roadmap for the visualizer app scaffold.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "About",
+  description: "Architecture, deployment notes, and remaining technical debt for Algo Visualizer.",
+  path: "/about",
+  keywords: ["architecture overview", "technical debt", "deployment notes"],
+});
 
 const principles = [
   {
@@ -23,10 +26,12 @@ const principles = [
   },
 ];
 
-const nextSteps = [
-  "Implement trace emitters for sorting algorithms and map them into snapshot checkpoints.",
-  "Replace preview playback state with a requestAnimationFrame-driven timeline controller.",
-  "Add side-by-side benchmark mode and route-level persistence through search params.",
+const technicalDebt = [
+  "Add Playwright end-to-end coverage for the critical interactive flows on desktop and tablet breakpoints.",
+  "Persist route state in search params so algorithm, speed, preset, and sample selection are shareable.",
+  "Profile the heaviest visualizers and selectively move more renderers toward Canvas or SVG where the DOM becomes limiting.",
+  "Add weighted graph and shortest-path modules, then revisit graph metadata and rendering abstractions for more advanced use cases.",
+  "Audit color contrast and keyboard flow across every control group after the final design system settles.",
 ];
 
 export default function AboutPage() {
@@ -55,11 +60,11 @@ export default function AboutPage() {
         </SurfaceCard>
 
         <SurfaceCard
-          title="Recommended Next Steps"
-          description="The shortest path from scaffold to usable sorting lab."
+          title="Technical Debt And Cleanup"
+          description="Known follow-up work before the product can be considered fully mature."
         >
           <ol className="space-y-3 text-sm leading-6 text-slate-300">
-            {nextSteps.map((step, index) => (
+            {technicalDebt.map((step, index) => (
               <li
                 key={step}
                 className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4"

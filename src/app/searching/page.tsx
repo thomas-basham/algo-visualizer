@@ -1,12 +1,28 @@
+import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/ui/page-hero";
-import { SearchingVisualizer } from "@/features/searching/ui/searching-visualizer";
+import { ModuleLoadingCard } from "@/components/ui/module-loading-card";
+import { createPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Searching Visualizer | Algo Visualizer",
+const SearchingVisualizer = dynamic(
+  () => import("@/features/searching/ui/searching-visualizer").then((module) => module.SearchingVisualizer),
+  {
+    loading: () => (
+      <ModuleLoadingCard
+        title="Loading Searching Lab"
+        description="Preparing search controls, event playback, and metrics panels."
+      />
+    ),
+  },
+);
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Searching Visualizer",
   description: "Linear and Binary Search visualizer with event-driven playback and learning panels.",
-};
+  path: "/searching",
+  keywords: ["linear search", "binary search", "search visualization"],
+});
 
 export default function SearchingPage() {
   return (

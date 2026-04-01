@@ -1,5 +1,7 @@
+import type { Route } from "next";
+
 export type SiteRoute = {
-  href: string;
+  href: Route;
   label: string;
   description: string;
 };

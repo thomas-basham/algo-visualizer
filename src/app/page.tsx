@@ -1,10 +1,29 @@
 import Link from "next/link";
+import type { Metadata, Route } from "next";
 
 import { PageHero } from "@/components/ui/page-hero";
 import { StatusPill } from "@/components/ui/status-pill";
 import { SurfaceCard } from "@/components/ui/surface-card";
+import { createPageMetadata } from "@/lib/site";
 
-const featureCards = [
+type FeatureCard = {
+  title: string;
+  eyebrow: string;
+  description: string;
+  href: Route;
+  status: string;
+  highlights: string[];
+};
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Interactive Algorithm Visualizer",
+  description:
+    "Explore sorting, searching, data structures, and graph traversal through a premium event-driven educational interface built with Next.js.",
+  path: "/",
+  keywords: ["algorithm education", "interactive visualization", "computer science learning"],
+});
+
+const featureCards: FeatureCard[] = [
   {
     title: "Sorting Lab",
     eyebrow: "Comparative analysis",
@@ -223,7 +242,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-2 2xl:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 2xl:grid-cols-4">
         {featureCards.map((card) => (
           <Link key={card.title} href={card.href} className="block h-full">
             <SurfaceCard

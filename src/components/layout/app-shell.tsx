@@ -14,7 +14,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen w-full max-w-[1680px] gap-5 px-4 py-4 sm:px-6 lg:px-8">
-        <aside className="surface-sheen sticky top-4 hidden h-[calc(100vh-2rem)] w-[320px] shrink-0 overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,14,28,0.96),rgba(7,12,22,0.88))] p-6 shadow-[0_34px_110px_rgba(2,6,23,0.54)] backdrop-blur-xl lg:flex lg:flex-col">
+        <aside className="surface-sheen sticky top-4 hidden h-[calc(100vh-2rem)] w-[320px] shrink-0 overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,14,28,0.96),rgba(7,12,22,0.88))] p-6 shadow-[0_34px_110px_rgba(2,6,23,0.54)] backdrop-blur-xl xl:flex xl:flex-col">
           <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_56%)]" />
           <div className="relative flex items-center gap-4">
             <LogoMark />
@@ -72,7 +72,7 @@ export function AppShell({ children }: AppShellProps) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="surface-sheen sticky top-4 z-20 rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,14,28,0.94),rgba(7,12,22,0.88))] px-4 py-4 shadow-[0_20px_60px_rgba(2,6,23,0.35)] backdrop-blur-xl lg:hidden">
+          <header className="surface-sheen sticky top-4 z-20 rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,14,28,0.94),rgba(7,12,22,0.88))] px-4 py-4 shadow-[0_20px_60px_rgba(2,6,23,0.35)] backdrop-blur-xl xl:hidden">
             <div className="mb-4 flex items-center gap-3">
               <LogoMark />
               <div>
