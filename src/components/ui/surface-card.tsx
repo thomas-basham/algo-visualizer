@@ -18,18 +18,23 @@ export function SurfaceCard({
   return (
     <section
       className={cn(
-        "rounded-[28px] border border-white/10 bg-slate-950/55 p-6 shadow-[0_24px_80px_rgba(3,8,20,0.45)] backdrop-blur-xl",
+        "surface-sheen rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(11,18,33,0.86),rgba(7,12,24,0.78))] p-6 shadow-[0_28px_90px_rgba(2,6,23,0.42)] backdrop-blur-xl sm:p-7",
         className,
       )}
     >
       {(title || description) && (
-        <header className="mb-5 space-y-1">
-          {title ? <h2 className="text-lg font-semibold text-white">{title}</h2> : null}
-          {description ? <p className="text-sm leading-6 text-slate-400">{description}</p> : null}
+        <header className="relative mb-6 space-y-1.5">
+          {title ? (
+            <h2 className="font-display text-lg font-semibold tracking-tight text-white sm:text-[1.15rem]">
+              {title}
+            </h2>
+          ) : null}
+          {description ? (
+            <p className="max-w-3xl text-sm leading-6 text-slate-400">{description}</p>
+          ) : null}
         </header>
       )}
-      {children}
+      <div className="relative">{children}</div>
     </section>
   );
 }
-
