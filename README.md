@@ -2,6 +2,12 @@
 
 Algo Visualizer is a production-minded educational web app for exploring algorithms and data structures through synchronized, event-driven playback. It is built as a serious developer tool rather than a one-off demo: algorithm engines emit semantic events, reducers turn those events into UI state, and feature modules stay isolated so new labs can be added without rewriting the shell.
 
+## Portfolio Summary
+
+This project is positioned as a full product build, not just a visualization demo. The main technical idea is a shared event-driven playback architecture: algorithms emit semantic events, reducers derive frame state, and the UI stays focused on rendering metrics, explanations, pseudocode, and visual highlights. That design is what lets the same app support sorting comparisons, search walkthroughs, data structure operations, and graph traversal without collapsing into route-specific animation code.
+
+If you want copy for your portfolio site, resume, GitHub profile, or interviews, see [docs/portfolio-kit.md](docs/portfolio-kit.md).
+
 ## Features
 
 - Sorting visualizer with side-by-side comparisons
@@ -11,6 +17,13 @@ Algo Visualizer is a production-minded educational web app for exploring algorit
 - Shared playback controls, metrics, pseudocode, and step explanations
 - Dark, portfolio-grade UI with responsive desktop and tablet layouts
 - SEO, Open Graph, sitemap, robots, manifest, and social preview routes for production deployment
+
+## Why It Stands Out
+
+- One playback architecture drives multiple algorithm domains instead of hard-coding animation logic into each page.
+- Sorting comparisons stay synchronized under a shared clock even when algorithms finish at different times.
+- Educational UX is treated as a first-class concern through step explanations, pseudocode highlighting, complexity summaries, and live metrics.
+- The app is prepared for production deployment with typed routes, lazy-loaded labs, social metadata, and representative test coverage.
 
 ## Stack
 
