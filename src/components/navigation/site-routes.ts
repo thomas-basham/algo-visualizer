@@ -10,31 +10,31 @@ export const siteRoutes: SiteRoute[] = [
   {
     href: "/",
     label: "Home",
-    description: "Overview and product entry point",
+    description: "Overview",
   },
   {
     href: "/sorting",
     label: "Sorting Visualizer",
-    description: "Playback, metrics, and extensible sorting scaffolds",
+    description: "Compare sorting algorithms",
   },
   {
     href: "/searching",
     label: "Searching Visualizer",
-    description: "Linear and binary search playback with guided explanations",
+    description: "Run Linear Search or Binary Search",
   },
   {
     href: "/data-structures",
     label: "Data Structures",
-    description: "Interactive stacks, queues, linked lists, and tree operations",
+    description: "Operate on classic structures",
   },
   {
     href: "/graphs",
     label: "Graph Visualizer",
-    description: "Breadth-first and depth-first traversal with live frontier state",
+    description: "Traverse sample graphs",
   },
   {
     href: "/about",
     label: "About",
-    description: "Architecture, intent, and expansion plan",
+    description: "Project notes",
   },
 ];

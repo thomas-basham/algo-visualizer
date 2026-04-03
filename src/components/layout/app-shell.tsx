@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { LogoMark } from "@/components/ui/logo-mark";
-import { StatusPill } from "@/components/ui/status-pill";
 
 type AppShellProps = {
   children: ReactNode;
@@ -22,21 +21,11 @@ export function AppShell({ children }: AppShellProps) {
               <div className="font-display text-sm font-semibold tracking-[0.28em] text-slate-200 uppercase">
                 Algo Visualizer
               </div>
-              <div className="mt-1 text-sm leading-6 text-slate-400">
-                Serious algorithm labs for education, interviews, and product demos
-              </div>
+              <div className="mt-1 text-sm leading-6 text-slate-400">Sorting, searching, structures, and graphs</div>
             </div>
           </div>
 
-          <div className="relative mt-6 rounded-[28px] border border-white/10 bg-white/[0.035] p-4">
-            <StatusPill label="Portfolio Build" tone="accent" />
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              A dark, developer-grade interface with event-driven labs for sorting, searching,
-              graphs, and core data structures.
-            </p>
-          </div>
-
-          <div className="relative mt-8 flex-1">
+          <div className="relative mt-6 flex-1">
             <SiteNavigation />
           </div>
 
@@ -50,15 +39,15 @@ export function AppShell({ children }: AppShellProps) {
               </div>
               <div className="rounded-2xl border border-white/8 bg-white/[0.035] p-3.5">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Playback
+                  Controls
                 </div>
                 <div className="mt-2 text-2xl font-semibold tracking-tight text-white">Shared</div>
               </div>
               <div className="rounded-2xl border border-white/8 bg-white/[0.035] p-3.5">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Focus
+                  Metrics
                 </div>
-                <div className="mt-2 text-2xl font-semibold tracking-tight text-white">Clarity</div>
+                <div className="mt-2 text-2xl font-semibold tracking-tight text-white">Live</div>
               </div>
             </div>
 
@@ -66,7 +55,7 @@ export function AppShell({ children }: AppShellProps) {
               href="/about"
               className="interactive-lift mt-5 inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-4 py-2 text-sm font-medium text-cyan-100 hover:border-cyan-300/35 hover:bg-cyan-300/[0.12]"
             >
-              Review architecture
+              About project
             </Link>
           </div>
         </aside>
@@ -79,7 +68,7 @@ export function AppShell({ children }: AppShellProps) {
                 <div className="font-display text-sm font-semibold uppercase tracking-[0.28em] text-slate-200">
                   Algo Visualizer
                 </div>
-                <div className="text-xs text-slate-400">Developer-grade algorithm labs</div>
+                <div className="text-xs text-slate-400">Algorithm labs</div>
               </div>
             </div>
             <SiteNavigation mobile />
