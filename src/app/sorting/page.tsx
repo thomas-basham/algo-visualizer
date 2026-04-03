@@ -29,9 +29,9 @@ export default function SortingPage() {
     <div className="space-y-6">
       <PageHero
         eyebrow="Sorting Lab"
-        badge="Comparison Mode"
-        title="A side-by-side sorting visualizer with synchronized playback, educational guidance, and a performance path for larger arrays."
-        description="Choose two algorithms, run them on the same preset input, and compare their emitted operations in real time. Each panel now explains the current step, highlights matching pseudocode, and keeps a beginner-friendly description alongside the visualization."
+        badge="Compare"
+        title="Compare two sorting algorithms on the same array."
+        description="Choose the algorithms, input preset, size, and speed. Run, pause, step, and reset while metrics and pseudocode stay in sync."
       />
       <SortingVisualizer />
     </div>

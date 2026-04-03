@@ -189,7 +189,7 @@ export function SortingVisualizer() {
     <div className="space-y-6">
       <SurfaceCard
         title="Comparison Controls"
-        description="Choose two algorithms, then run them on the same starting array with one shared playback engine."
+        description="Choose two algorithms and run them on the same starting array."
       >
         <SortingControls
           algorithms={availableSortingAlgorithms}
@@ -221,8 +221,8 @@ export function SortingVisualizer() {
         />
       ) : (
         <SurfaceCard
-          title="Synchronization Model"
-          description="Both timelines advance on the same clock. If one run finishes early, it freezes on its final frame while the other continues."
+          title="Run Status"
+          description="Both panels advance together. Finished runs stay on their last frame."
         >
           <div className="grid gap-4 text-sm leading-7 text-slate-300 md:grid-cols-3">
             <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
@@ -235,8 +235,8 @@ export function SortingVisualizer() {
               Shared operations elapsed: {playback.frameIndex} / {playback.maxFrameIndex}
               <div className="mt-2 text-slate-400">
                 {config.performanceMode
-                  ? "Canvas mode is active for smoother large-array rendering."
-                  : "Decorated DOM bars are active for higher visual clarity."}
+                  ? "Performance mode is on."
+                  : "Standard mode is on."}
               </div>
             </div>
           </div>

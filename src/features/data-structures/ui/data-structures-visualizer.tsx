@@ -193,7 +193,7 @@ export function DataStructuresVisualizer() {
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <SurfaceCard
           title="Structure Controls"
-          description="Run one structure operation at a time, then replay it with the shared playback engine."
+          description="Choose a structure, operation, value, and speed."
         >
           <DataStructuresControls
             structures={availableDataStructures}
@@ -231,7 +231,7 @@ export function DataStructuresVisualizer() {
 
         <SurfaceCard
           title="Operation Guide"
-          description="Plain-English context keeps the current interaction grounded in the underlying data-structure rules."
+          description="Rules and complexity for the selected operation."
         >
           <DataStructuresInfoPanel
             structureId={config.structureId}
@@ -242,8 +242,8 @@ export function DataStructuresVisualizer() {
       </div>
 
       <SurfaceCard
-        title="Visualization Layer"
-        description="The renderers stay structure-specific, but they all consume the same event-driven animation state."
+        title="Structure View"
+        description="Active nodes, inserts, removals, and search path."
       >
         {currentFrame.state.snapshot.kind === "linear" ? (
           <LinearStructure
@@ -268,8 +268,8 @@ export function DataStructuresVisualizer() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="Learning View"
-        description="Step copy updates with each emitted event so beginners can connect the animation to the structural rule."
+        title="Step Explanation"
+        description="Explanation and pseudocode for the current operation."
       >
         <DataStructuresStepPanel
           title={currentFrame.state.stepTitle}
@@ -281,8 +281,8 @@ export function DataStructuresVisualizer() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="Run Metrics"
-        description="Metrics come from the playback timeline rather than direct component mutation."
+        title="Metrics"
+        description="Steps, comparisons, operations, and elapsed time."
       >
         <DataStructuresMetricsPanel
           metrics={metrics}

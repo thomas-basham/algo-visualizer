@@ -162,7 +162,7 @@ export function GraphVisualizer() {
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <SurfaceCard
           title="Traversal Controls"
-          description="Generate a graph, pick a start node, and replay the traversal through the shared event-driven playback system."
+          description="Choose an algorithm, graph, start node, and speed."
         >
           <GraphControls
             algorithms={availableGraphAlgorithms}
@@ -195,7 +195,7 @@ export function GraphVisualizer() {
         </SurfaceCard>
 
         <SurfaceCard
-          title={selectedAlgorithm.label}
+          title="Current Step"
           description={selectedAlgorithm.description}
           className="flex flex-col justify-between"
         >
@@ -207,16 +207,13 @@ export function GraphVisualizer() {
             />
             <StatusPill label={graph.name} tone="neutral" />
           </div>
-          <div className="mt-6 text-sm leading-7 text-slate-300">
-            {currentFrame.event?.label ?? currentFrame.state.summary}. The traversal renderer
-            highlights the current node, active edge, visited set, and the live {selectedAlgorithm.frontierLabel.toLowerCase()} state.
-          </div>
+          <div className="mt-6 text-sm leading-7 text-slate-300">{currentFrame.event?.label ?? currentFrame.state.summary}.</div>
         </SurfaceCard>
       </div>
 
       <SurfaceCard
-        title="Visualization Layer"
-        description="Nodes and edges are rendered from graph snapshots, while frontier state and traversal order stay synchronized beside the canvas."
+        title="Graph View"
+        description="Visited nodes, active edges, and frontier order."
       >
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <GraphCanvas
@@ -238,8 +235,8 @@ export function GraphVisualizer() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="Learning View"
-        description="Traversal notes and pseudocode update from the same event payloads that drive the graph renderer."
+        title="Step Explanation"
+        description="Explanation and pseudocode for the current step."
       >
         <GraphEducationPanel
           algorithm={selectedAlgorithm}
@@ -250,8 +247,8 @@ export function GraphVisualizer() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="Run Metrics"
-        description="Traversal metrics are derived from the playback frames rather than direct component mutation."
+        title="Metrics"
+        description="Visited nodes, edge checks, and elapsed time."
       >
         <GraphMetricsPanel
           metrics={metrics}

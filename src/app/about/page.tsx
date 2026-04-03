@@ -38,10 +38,10 @@ export default function AboutPage() {
   return (
     <div className="space-y-6">
       <PageHero
-        eyebrow="About The Scaffold"
+        eyebrow="About"
         badge="Architecture"
-        title="The app shell is designed to outlive the first sorting demo."
-        description="This scaffold aims for a maintainable product architecture rather than a fast one-page prototype. The important boundary is between execution contracts and rendering components, because that is what makes later labs practical."
+        title="Project notes and next steps."
+        description="Architecture summary, deployment notes, and remaining cleanup work."
       />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">

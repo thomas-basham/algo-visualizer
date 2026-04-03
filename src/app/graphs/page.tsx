@@ -29,9 +29,9 @@ export default function GraphsPage() {
     <div className="space-y-6">
       <PageHero
         eyebrow="Graph Lab"
-        badge="Working Version"
-        title="Trace BFS and DFS across a live graph with visible frontier state and traversal order."
-        description="This module reuses the shared playback architecture, but switches to a graph renderer so nodes, edges, queue/stack state, and traversal explanations stay synchronized. Generate a sample graph, pick a start node, and watch the traversal expand one event at a time."
+        badge="Traversal"
+        title="Traverse sample graphs with BFS or DFS."
+        description="Pick a graph and start node, then follow visited nodes, active edges, and queue or stack state."
       />
       <GraphVisualizer />
     </div>

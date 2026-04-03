@@ -32,9 +32,9 @@ export default function DataStructuresPage() {
     <div className="space-y-6">
       <PageHero
         eyebrow="Data Structures"
-        badge="Interactive Lab"
-        title="Watch stack, queue, linked-list, and tree operations play out one decision at a time."
-        description="This section reuses the same event-driven playback model as the sorting and searching labs, but swaps in structure-specific renderers and operation guides. Add, remove, and search values while the app explains what the structure is doing and why."
+        badge="Operations"
+        title="Run add, remove, and search operations on classic data structures."
+        description="Work with stacks, queues, linked lists, and binary search trees one operation at a time."
       />
 
       <DataStructuresVisualizer />

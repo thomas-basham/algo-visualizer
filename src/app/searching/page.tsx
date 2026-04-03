@@ -29,9 +29,9 @@ export default function SearchingPage() {
     <div className="space-y-6">
       <PageHero
         eyebrow="Searching Lab"
-        badge="Working Version"
-        title="A search visualizer with event-driven playback, target selection, and guided algorithm explanations."
-        description="Linear Search and Binary Search now run through the same playback architecture as the sorting lab. Each step highlights the checked value, updates metrics, and keeps algorithm info plus pseudocode aligned with the active frame."
+        badge="Step-by-step"
+        title="Search for a target value step by step."
+        description="Switch between Linear Search and Binary Search, choose the target, and follow each comparison with metrics and pseudocode."
       />
       <SearchingVisualizer />
     </div>

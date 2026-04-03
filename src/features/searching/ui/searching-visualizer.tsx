@@ -184,7 +184,7 @@ export function SearchingVisualizer() {
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <SurfaceCard
           title="Search Controls"
-          description="Linear and Binary Search emit semantic events into the same playback engine used elsewhere in the app."
+          description="Choose an algorithm, target, size, and speed."
         >
           <SearchingControls
             algorithms={availableSearchAlgorithms}
@@ -209,7 +209,7 @@ export function SearchingVisualizer() {
         </SurfaceCard>
 
         <SurfaceCard
-          title={selectedAlgorithm.label}
+          title="Current Step"
           description={selectedAlgorithm.description}
           className="flex flex-col justify-between"
         >
@@ -218,16 +218,13 @@ export function SearchingVisualizer() {
             <StatusPill label={`Target ${target}`} tone="neutral" />
             <StatusPill label={`${config.size} Values`} tone="neutral" />
           </div>
-          <div className="mt-6 text-sm leading-7 text-slate-300">
-            {currentFrame.event?.label ?? currentFrame.state.summary}. Linear Search scans values
-            one by one, while Binary Search keeps narrowing the sorted range around the target.
-          </div>
+          <div className="mt-6 text-sm leading-7 text-slate-300">{currentFrame.event?.label ?? currentFrame.state.summary}.</div>
         </SurfaceCard>
       </div>
 
       <SurfaceCard
-        title="Visualization Layer"
-        description="The search array highlights the current check, the active binary-search range, and any values already inspected."
+        title="Search View"
+        description="Current check, active range, and found result."
       >
         <SearchingArray
           values={currentFrame.state.values}
@@ -240,8 +237,8 @@ export function SearchingVisualizer() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="Learning View"
-        description="Step copy and pseudocode stay aligned with the emitted event payload for the active frame."
+        title="Step Explanation"
+        description="Explanation and pseudocode for the current step."
       >
         <SearchingEducationPanel
           algorithm={selectedAlgorithm}
@@ -252,8 +249,8 @@ export function SearchingVisualizer() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="Run Metrics"
-        description="Search metrics are derived from the playback timeline, not from direct component mutation."
+        title="Metrics"
+        description="Steps, comparisons, and elapsed time."
       >
         <SearchingMetricsPanel
           metrics={metrics}
