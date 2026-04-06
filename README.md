@@ -1,6 +1,8 @@
 # Algo Visualizer
 
-Algo Visualizer is a production-minded educational web app for exploring algorithms and data structures through synchronized, event-driven playback. It is built as a serious developer tool rather than a one-off demo: algorithm engines emit semantic events, reducers turn those events into UI state, and feature modules stay isolated so new labs can be added without rewriting the shell.
+**Demo:** [https://main.d2ohi5jza0cs1j.amplifyapp.com](https://main.d2ohi5jza0cs1j.amplifyapp.com)
+
+Algo Visualizer is a production-minded educational web app for exploring algorithms and data structures through synchronized, event-driven playback. Algorithm engines emit semantic events, reducers turn those events into UI state, and feature modules stay isolated so new labs can be added without rewriting the shell.
 
 ## Portfolio Summary
 
