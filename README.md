@@ -4,11 +4,9 @@
 
 Algo Visualizer is a production-minded educational web app for exploring algorithms and data structures through synchronized, event-driven playback. Algorithm engines emit semantic events, reducers turn those events into UI state, and feature modules stay isolated so new labs can be added without rewriting the shell.
 
-## Portfolio Summary
+## Project Summary
 
-This project is positioned as a full product build, not just a visualization demo. The main technical idea is a shared event-driven playback architecture: algorithms emit semantic events, reducers derive frame state, and the UI stays focused on rendering metrics, explanations, pseudocode, and visual highlights. That design is what lets the same app support sorting comparisons, search walkthroughs, data structure operations, and graph traversal without collapsing into route-specific animation code.
-
-If you want copy for your portfolio site, resume, GitHub profile, or interviews, see [docs/portfolio-kit.md](docs/portfolio-kit.md).
+The main technical idea is a shared event-driven playback architecture: algorithms emit semantic events, reducers derive frame state, and the UI stays focused on rendering metrics, explanations, pseudocode, and visual highlights. That design is what lets the same app support sorting comparisons, search walkthroughs, data structure operations, and graph traversal without collapsing into route-specific animation code.
 
 ## Features
 
@@ -19,13 +17,6 @@ If you want copy for your portfolio site, resume, GitHub profile, or interviews,
 - Shared playback controls, metrics, pseudocode, and step explanations
 - Dark, portfolio-grade UI with responsive desktop and tablet layouts
 - SEO, Open Graph, sitemap, robots, manifest, and social preview routes for production deployment
-
-## Why It Stands Out
-
-- One playback architecture drives multiple algorithm domains instead of hard-coding animation logic into each page.
-- Sorting comparisons stay synchronized under a shared clock even when algorithms finish at different times.
-- Educational UX is treated as a first-class concern through step explanations, pseudocode highlighting, complexity summaries, and live metrics.
-- The app is prepared for production deployment with typed routes, lazy-loaded labs, social metadata, and representative test coverage.
 
 ## Stack
 
@@ -75,18 +66,6 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.vercel.app
 ```
 
 If the variable is not set, the app falls back to `https://algo-visualizer.vercel.app`.
-
-## Vercel Deployment
-
-This app is ready for standard Vercel deployment with the default Next.js build pipeline.
-
-1. Import the repository into Vercel.
-2. Set `NEXT_PUBLIC_SITE_URL` to your production domain.
-3. Keep the default build command: `npm run build`.
-4. Keep the default output mode for Next.js.
-5. Deploy.
-
-No custom Vercel adapter or server is required.
 
 ## Architecture Overview
 
